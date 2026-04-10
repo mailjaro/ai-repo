@@ -612,14 +612,14 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="paragraph">
-<p>En attention-laget i en transformer-blokk representeres av et sett av tre vektmatriser \(\mathbf{W^Q}\), \(\mathbf{W^K}\) og \(\mathbf{W^V}\). FFN-laget representeres av vektmatriser \(\mathbf{W^{(i)}}\), samt biasmatriser og ulike normaliseringsparametre.</p>
+<p>Et attention-lag i en transformer-blokk representeres av et sett av tre vektmatriser \(\mathbf{W^Q}\), \(\mathbf{W^K}\) og \(\mathbf{W^V}\). FFN-laget representeres av en vektmatrise \(\mathbf{W^{(i)}}\), samt en bias-matrise og ulike normaliseringsparametre.</p>
 </div>
 <div class="paragraph">
 <p>Merk at moderne litteratur begrepet lag (“layer”) annerledes i enn tradisjonelle lag i nodenettverk. Med dybden av en slik blokkarkitektur mener man antall blokker. Og vanlig dybde for større AI-modeller kan altså være rundt 100.</p>
 </div>
 <div class="paragraph">
 <p>Chatbots er egentlig designet for å finne nest ord fra en sekvens av ord. De er ikke designet for bare å gi ett svar på ett kort spørsmål, som vi har illustrert situasjonen med til nå. ChatBots besvarer egentlig: "Hva er neste token gitt hele teksten så langt?” Og “hele teksten” inkluderer:
-brukerens spørsmål alt modellen selv har generert. Vi skal se på alle detaljer rundt dette og alle de konkrete beregning snart.</p>
+brukerens spørsmål alt modellen selv har generert. Vi skal se på alle detaljer rundt dette og alle konkrete beregninger snart.</p>
 </div>
 </div>
 </div>
@@ -641,7 +641,7 @@ brukerens spørsmål alt modellen selv har generert. Vi skal se på alle detalje
 <h2 id="_2_tokens_og_embedding_vektorer">2. Tokens og embedding-vektorer</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Tekst representeres av embedding-vektorer via tokens. En token er en numerisk representasjon av et ord, en del av et ord eller et tegn, avhengig av hvordan modellen er trent. Spørsmålstegn og andre symboler er altså egne tokens, og sammensatte ord deles typisk opp i flere for lettere å reflektere semantikken. Ukjente ord vil bli delt opp, om nødvendig til enkelttegn, Et token fungerer som en indeks eller referanse til en embedding-vektor i en lært/trent modell, en såkalt embedding matrix:</p>
+<p>Tekst representeres av embedding-vektorer via tokens. En token er en numerisk representasjon av et ord, en del av et ord eller et tegn, avhengig av hvordan modellen er trent. Spørsmålstegn og andre symboler er altså egne tokens, og sammensatte ord deles typisk opp i flere for lettere å reflektere semantikken. Ukjente ord vil bli delt opp, om nødvendig til enkelttegn. Et token fungerer som en indeks eller referanse til en embedding-vektor i en lært/trent modell, en såkalt embedding matrix:</p>
 </div>
 <div class="stemblock">
 <div class="content">
@@ -677,7 +677,7 @@ bil     │ 0.9  -0.5  0.1  0.2 │
 </div>
 </div>
 <div class="paragraph">
-<p>Dimensjoner og implementasjonsdetaljer i nyere chatbots er ofte hemmelig, men for ChatGPT 3 er disse detaljene kjente. ChatGPT 3 er egentlig en familie av modeller: I den største av disse er er lengden av embeddingsvektorer 12 288. Antall token er 50 257. Dvs. at \(\mathbf{W^{embed}}\) er en \(50 \: 257 \times 12 \: 288\)-matrise.</p>
+<p>Dimensjoner og implementasjonsdetaljer i nyere chatbots er ofte hemmelig, men for ChatGPT 3 er disse detaljene kjente. ChatGPT 3 er egentlig en familie av modeller: I den største av disse er lengden av embeddingsvektorer 12 288. Antall token er 50 257. Dvs. at \(\mathbf{W^{embed}}\) er en \(50 \: 257 \times 12 \: 288\)-matrise.</p>
 </div>
 <div class="paragraph">
 <p>Input-vektorene \(\mathbf{x^{(i)}}\), som kommer følgens av tokens, settes sammen til én input-matrise \(\mathbf{X}\). Det vil altså si at rader for aktuelle tokens i embeddingsmatrisen, blir radene i \(\mathbf{X}\).</p>
@@ -695,13 +695,13 @@ bil     │ 0.9  -0.5  0.1  0.2 │
 </div>
 </div>
 <div class="paragraph">
-<p>Moderne arkitektur opererer med matriser gjennom hele forward flow, ikke enkeltvektorer som i tradisjonelle nodenettverk, og modellen produserer i hvert run en output-matrise \(\mathbf{Y}\).</p>
-</div>
-<div class="paragraph">
 <p>Antall rader i \(\mathbf{X}\) vil være antall tokens i spørsmålet. Så om vektorlengdene er \(12 \: 288\) og antall input-tokens er \(10\), vil \(\mathbf{X}\) (og output-matrise \(\mathbf{Y}\) ) være en \(10 \times 12 \: 288\)-matrise.</p>
 </div>
 <div class="paragraph">
 <p>(I virkeligheten er det mer effektivt å velge en rad-antall som bedre reflekter mer effektive datastørrelser som 128, 512 etc, slik at \(\mathbf{X}\)  gjerne paddes med 0&#8217;ere).</p>
+</div>
+<div class="paragraph">
+<p>Moderne arkitektur opererer med matriser gjennom hele forward flow, ikke enkeltvektorer som i tradisjonelle nodenettverk, og modellen produserer i hvert run en output-matrise \(\mathbf{Y}\).</p>
 </div>
 </div>
 </div>
@@ -739,7 +739,7 @@ bil     │ 0.9  -0.5  0.1  0.2 │
 </ul>
 </div>
 <div class="paragraph">
-<p>Merk at det disse navnen indikerer språklige roller, som man kanskje eller kanskje ikke oppnås for matrisene. Det bør understrekes at disse ikke trenes forskjellig. Eventuelle grammatiske egenskaper er i tilfelle bare en indirekte følge av deres matematiske plassering i formlene.</p>
+<p>Merk at det disse navnen indikerer språklige roller, som kanskje eller kanskje ikke oppnås for matrisene. Det bør understrekes at disse ikke trenes forskjellig. Eventuelle grammatiske egenskaper er i tilfelle bare en indirekte følge av deres matematiske plassering i formlene og konskvensene dette for i treningen.</p>
 </div>
 <div class="paragraph">
 <p>Glem heller ikke at disse matrisene er tre projeksjoner av input-matrisen.</p>
@@ -762,7 +762,7 @@ bil     │ 0.9  -0.5  0.1  0.2 │
 <p>der man deler på en skaleringsfaktor \(\sqrt{d_k})\) for stabilitet. Dette gir en \(n×n\) matrise med såkalte scores-verdier.</p>
 </div>
 <div class="paragraph">
-<p>Merk at om bruker-spørsmålet bestod av \(10\) tokens, så blir resultatet en \(10×10\)-matrise (om vi ser bort fra eventuell padding). Dette må derfor ha noe med vår 10 input-tokens å gjøre. Her ser vi et eksempel på resultatmatrisen på dette stadiet i beregningen. Eller mer presist ville dette nøyaktig vært det vi hadde fått om vi multiplisert \(\mathbf{X}\) og \(\mathbf{X^T}\) direkte. Nå er radvektorene først endret av harde vektmatriser, dvs. de er flyttet lineært rundt i vektrommet og representerer ikke konkrete noe tokens med sine nåværende verdier (i prinsippet kunne de til og med ha representert andre tokens, selv om dette er ekstremt lite sannsynlig). Det virker likevel rimelig å si at dette er hva matrisen representerer etter radvektorenes ulike "reiser" i vektrommet bestemt av \(\mathbf{W^Q}\) og \(\mathbf{W^K}\).</p>
+<p>Merk at om bruker-spørsmålet bestod av \(10\) tokens, så blir resultatet en \(10×10\)-matrise (om vi ser bort fra eventuell padding). Dette må derfor ha noe med vår 10 input-tokens å gjøre. Her ser vi et eksempel på resultatmatrisen på dette stadiet i beregningen. Eller mer presist ville dette nøyaktig vært det vi hadde fått om vi multiplisert \(\mathbf{X}\) og \(\mathbf{X^T}\) direkte. Nå er radvektorene først endret av harde vektmatriser, dvs. de er flyttet lineært rundt i vektrommet og representerer ikke konkrete noe tokens med sine nåværende verdier (i prinsippet kunne de til og med ha representert andre tokens, selv om dette er ekstremt lite sannsynlig). Det virker likevel rimelig å si at dette er sammenhengen mellom token&#8217;ene etter radvektorenes ulike "reiser" i vektrommet bestemt av \(\mathbf{W^Q}\) og \(\mathbf{W^K}\).</p>
 </div>
 <div class="paragraph">
 <p>Negative verdier er fullt mulig her, men er utelatt av hensyn til pen, enkel formatering.</p>
@@ -831,7 +831,7 @@ den     │ 0.05   0.05   0.05   0.35   0.10   0.15   0.05   0.05     0.10   0.1
 </div>
 </div>
 <div class="paragraph">
-<p>Merk at vi med de radvise \(\text{softmax}\)-operasjonene også har tvunget fram en forskjell mellom rader og kolonner. Verdien i f.eks. posisjon (2, 5) betyr noe annet enn verdien i posisjon (5, 2). Mange sier litt for lettvint at det første betyr at sannsynligheten der måler hvor relevant token 5 er for token 2 (og motsatt for det andre). Igjen kan det hende at dette blir en følge gjennom trening, men det er ikke gitt fra matematikken at det blir slik. Vi har imidlertid tvunget fram en usymmetri som treningen kan gi betydning.</p>
+<p>Merk at vi med de radvise \(\text{softmax}\)-operasjonene også har tvunget fram en forskjell mellom rader og kolonner i denne kvadratiske matrisen. Verdien i f.eks. posisjon (2, 5) betyr noe annet enn verdien i posisjon (5, 2). Mange sier litt for lettvint (etter min mening) at det første betyr at sannsynligheten der måler hvor relevant token 5 er for token 2 (og motsatt for det andre). Igjen kan det hende at dette blir en følge gjennom trening, men det er ikke gitt fra matematikken at det blir slik. Vi har imidlertid tvunget fram en usymmetri som treningen kan gi en betydning.</p>
 </div>
 </div>
 <div class="sect2">
@@ -868,18 +868,21 @@ den     │ 0.05   0.05   0.05   0.35   0.10   0.15   0.05   0.05     0.10   0.1
 </div>
 </div>
 <div class="paragraph">
-<p>Koeffisientene \(a_{i,j}\) her er nettopp sannsynlighetsverdiene (radene) i attention-matrisen vi har eksemplifisert. Radvektoren vi ser her representerer altså en vektor i det store vektorrommet med koeffisienter med slike koeffisienter. Jeg føler det er grunn til å være forsiktige med for konkrete språknære tolkninger av denne. Det som imidlertid ER sikkert, er at vi har utført en attention-operasjon (transformerte \(\mathbf{X}\)-verdier er unyttet som soft weights i bestemmelsen av \(\mathbf{Z}\)). Verdiene er sterkt avhengig av hvilke tokens som er benyttet til nå. Håpet er altså at nye tokens som produseres med dette er bedre knyttet til setningene som kommer før det, og dermed gjør modellen bedre egnet.</p>
+<p>Koeffisientene \(a_{i,j}\) her er nettopp sannsynlighetsverdiene (radene) i attention-matrisen vi har eksemplifisert. Radvektoren vi ser her representerer altså en vektor i det store vektorrommet med koeffisienter med slike koeffisienter. Jeg føler det er grunn til å være forsiktige med for konkrete språknære tolkninger av denne. Det som imidlertid ER sikkert, er at vi har utført en tydelig attention-operasjon (transformerte \(\mathbf{X}\)-verdier er unyttet som soft weights i bestemmelsen av \(\mathbf{Z}\)). Verdiene er sterkt avhengig av hvilke tokens som er benyttet til nå. Håpet er altså at nye tokens som produseres med dette er bedre knyttet til setningene som kommer før det, og dermed gjør modellen bedre egnet.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_5_residual_add_layer_norm_stabilitet">5. Residual Add &amp; Layer Norm (Stabilitet)</h3>
 <div class="paragraph">
-<p>Dette er "snarveien". Vi legger den opprinnelige \(\mathbf{X}\) til resultatet \(\mathbf{Z}\), og normaliserer tallene slik at de har et gjennomsnitt på 0 og et standardavvik på 1.</p>
+<p>Det første vi gjør er å utføre den første av to resudial connections. For FFN-laget i første blokk legger man den opprinnelige \(\mathbf{X}\) til resultatet \(\mathbf{Z}\). I etterfølgende blokker er det output-vektoren fra forrige blokk som benyttes som input-blokk her. Deretter normaliserer tallene slik at de har et gjennomsnitt på 0 og et standardavvik på 1.</p>
 </div>
 <div class="stemblock">
 <div class="content">
 \[\mathbf{X_{mid}} = \text{LayerNorm}(\mathbf{Z} + \mathbf{X})\]
 </div>
+</div>
+<div class="paragraph">
+<p>RESTEN AV DOKUMENTET ER BARE KLADD OG BESTÅR AV LØSREVNE UTSAGN SOM IKKE ER GJENNOMGÅTT</p>
 </div>
 <div class="paragraph">
 <p>Funksjonen \(\text{LayerNorm}\) (Layer Normalization) er en kritisk komponent for å holde matematikken stabil. Uten denne ville tallene i matrisen enten vokst seg gigantiske eller krympet til null etter 12 blokker, noe som gjør det umulig for modellen å lære. For en vektor \(\mathbf{x}\) med dimensjon \(d\), beregnes LayerNorm slik:</p>
@@ -1239,7 +1242,7 @@ b = [np.zeros((128, 1)),
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-04-10 12:45:49 +0200
+Last updated 2026-04-10 18:42:47 +0200
 </div>
 </div>
 <script type="text/x-mathjax-config">

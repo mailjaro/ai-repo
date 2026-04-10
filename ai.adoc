@@ -168,7 +168,7 @@ bil     │ 0.9  -0.5  0.1  0.2 │
         └─────────────────────┘
 ----
 
-Dimensjoner og implementasjonsdetaljer i nyere chatbots er ofte hemmelig, men for ChatGPT 3 er disse detaljene kjente. ChatGPT 3 er egentlig en familie av modeller: I den største av disse er er lengden av embeddingsvektorer 12 288. Antall token er 50 257. Dvs. at stem:[\mathbf{W^{embed}}] er en stem:[50 \: 257 \times 12 \: 288]-matrise.
+Dimensjoner og implementasjonsdetaljer i nyere chatbots er ofte hemmelig, men for ChatGPT 3 er disse detaljene kjente. ChatGPT 3 er egentlig en familie av modeller: I den største av disse er lengden av embeddingsvektorer 12 288. Antall token er 50 257. Dvs. at stem:[\mathbf{W^{embed}}] er en stem:[50 \: 257 \times 12 \: 288]-matrise.
 
 Input-vektorene stem:[\mathbf{x^{(i)}}], som kommer følgens av tokens, settes sammen til én input-matrise stem:[\mathbf{X}]. Det vil altså si at rader for aktuelle tokens i embeddingsmatrisen, blir radene i stem:[\mathbf{X}].
 
@@ -210,7 +210,7 @@ Det første som skjer er at input-matrisen stem:[\mathbf{X}] multipliseres med t
 
 - stem:[\mathbf{V=X⋅W^V}] (Values)
 
-Merk at det disse navnen indikerer språklige roller, som man kanskje eller kanskje ikke oppnås for matrisene. Det bør understrekes at disse ikke trenes forskjellig. Eventuelle grammatiske egenskaper er i tilfelle bare en indirekte følge av deres matematiske plassering i formlene.
+Merk at det disse navnen indikerer språklige roller, som kanskje eller kanskje ikke oppnås for matrisene. Det bør understrekes at disse ikke trenes forskjellig. Eventuelle grammatiske egenskaper er i tilfelle bare en indirekte følge av deres matematiske plassering i formlene og konskvensene dette for i treningen.
 
 Glem heller ikke at disse matrisene er tre projeksjoner av input-matrisen.
 
@@ -227,7 +227,7 @@ Først gjør man
 
 der man deler på en skaleringsfaktor stem:[\sqrt{d_k})] for stabilitet. Dette gir en stem:[n×n] matrise med såkalte scores-verdier.
 
-Merk at om bruker-spørsmålet bestod av stem:[10] tokens, så blir resultatet en stem:[10×10]-matrise (om vi ser bort fra eventuell padding). Dette må derfor ha noe med vår 10 input-tokens å gjøre. Her ser vi et eksempel på resultatmatrisen på dette stadiet i beregningen. Eller mer presist ville dette nøyaktig vært det vi hadde fått om vi multiplisert stem:[\mathbf{X}] og stem:[\mathbf{X^T}] direkte. Nå er radvektorene først endret av harde vektmatriser, dvs. de er flyttet lineært rundt i vektrommet og representerer ikke konkrete noe tokens med sine nåværende verdier (i prinsippet kunne de til og med ha representert andre tokens, selv om dette er ekstremt lite sannsynlig). Det virker likevel rimelig å si at dette er hva matrisen representerer etter radvektorenes ulike "reiser" i vektrommet bestemt av stem:[\mathbf{W^Q}] og stem:[\mathbf{W^K}].
+Merk at om bruker-spørsmålet bestod av stem:[10] tokens, så blir resultatet en stem:[10×10]-matrise (om vi ser bort fra eventuell padding). Dette må derfor ha noe med vår 10 input-tokens å gjøre. Her ser vi et eksempel på resultatmatrisen på dette stadiet i beregningen. Eller mer presist ville dette nøyaktig vært det vi hadde fått om vi multiplisert stem:[\mathbf{X}] og stem:[\mathbf{X^T}] direkte. Nå er radvektorene først endret av harde vektmatriser, dvs. de er flyttet lineært rundt i vektrommet og representerer ikke konkrete noe tokens med sine nåværende verdier (i prinsippet kunne de til og med ha representert andre tokens, selv om dette er ekstremt lite sannsynlig). Det virker likevel rimelig å si at dette er sammenhengen mellom token'ene etter radvektorenes ulike "reiser" i vektrommet bestemt av stem:[\mathbf{W^Q}] og stem:[\mathbf{W^K}].
 
 Negative verdier er fullt mulig her, men er utelatt av hensyn til pen, enkel formatering.
 
@@ -289,7 +289,7 @@ den     │ 0.05   0.05   0.05   0.35   0.10   0.15   0.05   0.05     0.10   0.1
         └────────────────────────────────────────────────────────────────────────┘
 ----
 
-Merk at vi med de radvise stem:[\text{softmax}]-operasjonene også har tvunget fram en forskjell mellom rader og kolonner. Verdien i f.eks. posisjon (2, 5) betyr noe annet enn verdien i posisjon (5, 2). Mange sier litt for lettvint at det første betyr at sannsynligheten der måler hvor relevant token 5 er for token 2 (og motsatt for det andre). Igjen kan det hende at dette blir en følge gjennom trening, men det er ikke gitt fra matematikken at det blir slik. Vi har imidlertid tvunget fram en usymmetri som treningen kan gi betydning.
+Merk at vi med de radvise stem:[\text{softmax}]-operasjonene også har tvunget fram en forskjell mellom rader og kolonner i denne kvadratiske matrisen. Verdien i f.eks. posisjon (2, 5) betyr noe annet enn verdien i posisjon (5, 2). Mange sier litt for lettvint (etter min mening) at det første betyr at sannsynligheten der måler hvor relevant token 5 er for token 2 (og motsatt for det andre). Igjen kan det hende at dette blir en følge gjennom trening, men det er ikke gitt fra matematikken at det blir slik. Vi har imidlertid tvunget fram en usymmetri som treningen kan gi en betydning.
 
 === 4. Vektet sum (Kontekstualisering)
 
@@ -322,16 +322,20 @@ z_{1,2} = a_{1,1} \cdot v_{1,2} + a_{1,2} \cdot v_{2,2} + \ldots  + a_{1,10} \cd
 z_{1, \: 12 \: 208} = a_{1,1} \cdot v_{1,\: 12 \: 208} + a_{1, \: 12 \: 208} \cdot v_{2,2} + \ldots  + a_{1,10} \cdot v_{10, \: 12 \: 208}
 ++++
 
-Koeffisientene stem:[a_{i,j}] her er nettopp sannsynlighetsverdiene (radene) i attention-matrisen vi har eksemplifisert. Radvektoren vi ser her representerer altså en vektor i det store vektorrommet med koeffisienter med slike koeffisienter. Jeg føler det er grunn til å være forsiktige med for konkrete språknære tolkninger av denne. Det som imidlertid ER sikkert, er at vi har utført en attention-operasjon (transformerte stem:[\mathbf{X}]-verdier er unyttet som soft weights i bestemmelsen av stem:[\mathbf{Z}]). Verdiene er sterkt avhengig av hvilke tokens som er benyttet til nå. Håpet er altså at nye tokens som produseres med dette er bedre knyttet til setningene som kommer før det, og dermed gjør modellen bedre egnet.
+Koeffisientene stem:[a_{i,j}] her er nettopp sannsynlighetsverdiene (radene) i attention-matrisen vi har eksemplifisert. Radvektoren vi ser her representerer altså en vektor i det store vektorrommet med koeffisienter med slike koeffisienter. Jeg føler det er grunn til å være forsiktige med for konkrete språknære tolkninger av denne. Det som imidlertid ER sikkert, er at vi har utført en tydelig attention-operasjon (transformerte stem:[\mathbf{X}]-verdier er unyttet som soft weights i bestemmelsen av stem:[\mathbf{Z}]). Verdiene er sterkt avhengig av hvilke tokens som er benyttet til nå. Håpet er altså at nye tokens som produseres med dette er bedre knyttet til setningene som kommer før det, og dermed gjør modellen bedre egnet.
  
 === 5. Residual Add & Layer Norm (Stabilitet)
 
-Dette er "snarveien". Vi legger den opprinnelige stem:[\mathbf{X}] til resultatet stem:[\mathbf{Z}], og normaliserer tallene slik at de har et gjennomsnitt på 0 og et standardavvik på 1.
+Det første vi gjør er å utføre den første av to resudial connections. For FFN-laget i første blokk legger man den opprinnelige stem:[\mathbf{X}] til resultatet stem:[\mathbf{Z}]. I etterfølgende blokker er det output-vektoren fra forrige blokk som benyttes som input-blokk her. Deretter normaliserer tallene slik at de har et gjennomsnitt på 0 og et standardavvik på 1.
 
 [stem]
 ++++
 \mathbf{X_{mid}} = \text{LayerNorm}(\mathbf{Z} + \mathbf{X})
 ++++
+
+
+RESTEN AV DOKUMENTET ER BARE KLADD OG BESTÅR AV LØSREVNE UTSAGN SOM IKKE ER GJENNOMGÅTT
+
 
 Funksjonen stem:[\text{LayerNorm}] (Layer Normalization) er en kritisk komponent for å holde matematikken stabil. Uten denne ville tallene i matrisen enten vokst seg gigantiske eller krympet til null etter 12 blokker, noe som gjør det umulig for modellen å lære. For en vektor stem:[\mathbf{x}] med dimensjon stem:[d], beregnes LayerNorm slik:
 
