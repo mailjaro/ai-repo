@@ -762,10 +762,10 @@ bil     │ 0.9  -0.5  0.1  0.2 │
 <p>der man deler på en skaleringsfaktor \(\sqrt{d_k})\) for stabilitet. Dette gir en \(n×n\) matrise med såkalte scores-verdier.</p>
 </div>
 <div class="paragraph">
-<p>Merk at om bruker-spørsmålet bestod av \(10\) tokens, så blir resultatet en \(10×10\)-matrise (om vi ser bort fra eventuell padding). Dette må derfor ha noe med vår 10 input-tokens å gjøre. Her ser vi et eksempel på resultatmatrisen på dette stadiet i beregningen. Eller mer presist ville dette nøyaktig vært det vi hadde fått om vi multiplisert \(\mathbf{X}\) og \(\mathbf{X^T}\) direkte. Nå er radvektorene først endret av harde vektmatriser, dvs. de er flyttet lineært rundt i vektrommet og representerer ikke konkrete noe tokens med sine nåværende verdier (i prinsippet kunne de til og med ha representert andre tokens, selv om dette er ekstremt lite sannsynlig). Det virker likevel rimelig å si at dette er sammenhengen mellom token&#8217;ene etter radvektorenes ulike "reiser" i vektrommet bestemt av \(\mathbf{W^Q}\) og \(\mathbf{W^K}\).</p>
+<p>Merk at om bruker-spørsmålet bestod av \(10\) tokens, så blir resultatet en \(10×10\)-matrise (om vi ser bort fra eventuell padding). Dette må derfor ha noe med vår 10 input-tokens å gjøre. Under ser vi et eksempel på resultatmatrisen på dette stadiet i beregningen. Eller mer presist ville dette nøyaktig vært det vi hadde fått om vi multiplisert \(\mathbf{X}\) og \(\mathbf{X^T}\) direkte. Nå er radvektorene først endret av harde vektmatriser, dvs. de er flyttet lineært rundt i vektrommet og representerer ikke konkrete noe tokens med sine nåværende verdier (i prinsippet kunne de til og med ha representert andre tokens, selv om dette er ekstremt lite sannsynlig). Det virker likevel rimelig å si at dette er sammenhengen mellom token&#8217;ene etter radvektorenes ulike "reiser" i vektrommet bestemt av \(\mathbf{W^Q}\) og \(\mathbf{W^K}\).</p>
 </div>
 <div class="paragraph">
-<p>Negative verdier er fullt mulig her, men er utelatt av hensyn til pen, enkel formatering.</p>
+<p>Uansett er hvert tall resultat av skalarproduktet mellom en radvektor i \(\mathbf{Q}\) og en radvektor i \(\mathbf{K}\). Tallet er altså relatert til vinkelen mellom vektorene, men ikke helt og fullt siden man ikke har dividert med vektorlengdene (og fått cosinus-vinkel). Tall kan bli relativt store både fordi vinkelen mellom dem er liten eller vektorene er lange f.eks. Negative verdier er fullt mulig her, men er utelatt av hensyn til pen, enkel formatering.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -787,7 +787,7 @@ den     │  0.4    0.5    0.5    3.2    1.1    1.6    0.3     0.4      0.9    1
 </div>
 </div>
 <div class="paragraph">
-<p>Tallene sier noe om hvor mye token som "hund" og "parken" påvirker hverandre. Noen tall er negative, noen positive, noen store, noen små. Men verdiene lar seg ikke tolke direkte foreløpig.</p>
+<p>Tallene sier trolig noe om hvor nærme token som "hund" og "parken" er i situasjonen, eller kanskje hvor mye det ene påvirker det andre. Men som så ofte før, man bør være litt kritisk til å hoppe på språklige karakteriseringer for raskt. Beregningene sier egentlig noe om retningen mellom vektorene for token&#8217;ene etter at vektorene har blitt flyttet, dreid og strukket i vektorrommet via trente vekter. Man legger sånn sett tilrette for at treningen kan premiere grammatikalske versjoner av "nærhet" og "påvirkning", men man kan ikke ta for gitt at AI opererer slik.</p>
 </div>
 </div>
 <div class="sect2">
@@ -831,7 +831,7 @@ den     │ 0.05   0.05   0.05   0.35   0.10   0.15   0.05   0.05     0.10   0.1
 </div>
 </div>
 <div class="paragraph">
-<p>Merk at vi med de radvise \(\text{softmax}\)-operasjonene også har tvunget fram en forskjell mellom rader og kolonner i denne kvadratiske matrisen. Verdien i f.eks. posisjon (2, 5) betyr noe annet enn verdien i posisjon (5, 2). Mange sier litt for lettvint (etter min mening) at det første betyr at sannsynligheten der måler hvor relevant token 5 er for token 2 (og motsatt for det andre). Igjen kan det hende at dette blir en følge gjennom trening, men det er ikke gitt fra matematikken at det blir slik. Vi har imidlertid tvunget fram en usymmetri som treningen kan gi en betydning.</p>
+<p>Merk at vi med de radvise \(\text{softmax}\)-operasjonene også har tvunget fram en forskjell mellom rader og kolonner i denne kvadratiske matrisen. Verdien i f.eks. posisjon (2, 5) betyr noe annet enn verdien i posisjon (5, 2). Mange sier litt for lettvint (etter min mening) at det første betyr at sannsynligheten der måler hvor relevant token 5 er for token 2 (og motsatt for det andre). Igjen kan det hende at dette blir en følge gjennom trening, men det er ikke gitt fra matematikken at det blir slik. Vi har imidlertid tvunget fram en usymmetri som treningen <em>kan</em> gi en f.eks. en slik betydning.</p>
 </div>
 </div>
 <div class="sect2">
@@ -868,7 +868,7 @@ den     │ 0.05   0.05   0.05   0.35   0.10   0.15   0.05   0.05     0.10   0.1
 </div>
 </div>
 <div class="paragraph">
-<p>Koeffisientene \(a_{i,j}\) her er nettopp sannsynlighetsverdiene (radene) i attention-matrisen vi har eksemplifisert. Radvektoren vi ser her representerer altså en vektor i det store vektorrommet med koeffisienter med slike koeffisienter. Jeg føler det er grunn til å være forsiktige med for konkrete språknære tolkninger av denne. Det som imidlertid ER sikkert, er at vi har utført en tydelig attention-operasjon (transformerte \(\mathbf{X}\)-verdier er unyttet som soft weights i bestemmelsen av \(\mathbf{Z}\)). Verdiene er sterkt avhengig av hvilke tokens som er benyttet til nå. Håpet er altså at nye tokens som produseres med dette er bedre knyttet til setningene som kommer før det, og dermed gjør modellen bedre egnet.</p>
+<p>Koeffisientene \(a_{i,j}\) her er nettopp sannsynlighetsverdiene (radene) i attention-matrisen vi har eksemplifisert. Radvektoren vi ser her representerer altså en vektor i det store vektorrommet med koeffisienter med slike koeffisienter. Konkrete språknære tolkninger av denne bør man også i utgangspunktet være forsiktig med. Det som imidlertid <em>er</em> sikkert, er at vi har utført en tydelig attention-operasjon (transformerte \(\mathbf{X}\)-verdier er unyttet som soft weights i bestemmelsen av \(\mathbf{Z}\)). Verdiene er sterkt avhengig av hvilke tokens som er benyttet til nå. Håpet er altså at nye tokens som produseres med dette er bedre knyttet til setningene som kommer før det, og dermed gjør modellen bedre egnet.</p>
 </div>
 </div>
 <div class="sect2">
@@ -1242,7 +1242,7 @@ b = [np.zeros((128, 1)),
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-04-10 18:42:47 +0200
+Last updated 2026-04-10 21:49:01 +0200
 </div>
 </div>
 <script type="text/x-mathjax-config">

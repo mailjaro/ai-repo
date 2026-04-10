@@ -227,9 +227,9 @@ Først gjør man
 
 der man deler på en skaleringsfaktor stem:[\sqrt{d_k})] for stabilitet. Dette gir en stem:[n×n] matrise med såkalte scores-verdier.
 
-Merk at om bruker-spørsmålet bestod av stem:[10] tokens, så blir resultatet en stem:[10×10]-matrise (om vi ser bort fra eventuell padding). Dette må derfor ha noe med vår 10 input-tokens å gjøre. Her ser vi et eksempel på resultatmatrisen på dette stadiet i beregningen. Eller mer presist ville dette nøyaktig vært det vi hadde fått om vi multiplisert stem:[\mathbf{X}] og stem:[\mathbf{X^T}] direkte. Nå er radvektorene først endret av harde vektmatriser, dvs. de er flyttet lineært rundt i vektrommet og representerer ikke konkrete noe tokens med sine nåværende verdier (i prinsippet kunne de til og med ha representert andre tokens, selv om dette er ekstremt lite sannsynlig). Det virker likevel rimelig å si at dette er sammenhengen mellom token'ene etter radvektorenes ulike "reiser" i vektrommet bestemt av stem:[\mathbf{W^Q}] og stem:[\mathbf{W^K}].
+Merk at om bruker-spørsmålet bestod av stem:[10] tokens, så blir resultatet en stem:[10×10]-matrise (om vi ser bort fra eventuell padding). Dette må derfor ha noe med vår 10 input-tokens å gjøre. Under ser vi et eksempel på resultatmatrisen på dette stadiet i beregningen. Eller mer presist ville dette nøyaktig vært det vi hadde fått om vi multiplisert stem:[\mathbf{X}] og stem:[\mathbf{X^T}] direkte. Nå er radvektorene først endret av harde vektmatriser, dvs. de er flyttet lineært rundt i vektrommet og representerer ikke konkrete noe tokens med sine nåværende verdier (i prinsippet kunne de til og med ha representert andre tokens, selv om dette er ekstremt lite sannsynlig). Det virker likevel rimelig å si at dette er sammenhengen mellom token'ene etter radvektorenes ulike "reiser" i vektrommet bestemt av stem:[\mathbf{W^Q}] og stem:[\mathbf{W^K}].
 
-Negative verdier er fullt mulig her, men er utelatt av hensyn til pen, enkel formatering.
+Uansett er hvert tall resultat av skalarproduktet mellom en radvektor i stem:[\mathbf{Q}] og en radvektor i stem:[\mathbf{K}]. Tallet er altså relatert til vinkelen mellom vektorene, men ikke helt og fullt siden man ikke har dividert med vektorlengdene (og fått cosinus-vinkel). Tall kan bli relativt store både fordi vinkelen mellom dem er liten eller vektorene er lange f.eks. Negative verdier er fullt mulig her, men er utelatt av hensyn til pen, enkel formatering.
 
 [source, text]
 ----
@@ -250,7 +250,7 @@ den     │  0.4    0.5    0.5    3.2    1.1    1.6    0.3     0.4      0.9    1
         └────────────────────────────────────────────────────────────────────────┘
 ----
 
-Tallene sier noe om hvor mye token som "hund" og "parken" påvirker hverandre. Noen tall er negative, noen positive, noen store, noen små. Men verdiene lar seg ikke tolke direkte foreløpig.
+Tallene sier trolig noe om hvor nærme token som "hund" og "parken" er i situasjonen, eller kanskje hvor mye det ene påvirker det andre. Men som så ofte før, man bør være litt kritisk til å hoppe på språklige karakteriseringer for raskt. Beregningene sier egentlig noe om retningen mellom vektorene for token'ene etter at vektorene har blitt flyttet, dreid og strukket i vektorrommet via trente vekter. Man legger sånn sett tilrette for at treningen kan premiere grammatikalske versjoner av "nærhet" og "påvirkning", men man kan ikke ta for gitt at AI opererer slik.
 
 === 3. Softmax (Sannsynlighetsvekter)
 
@@ -289,7 +289,7 @@ den     │ 0.05   0.05   0.05   0.35   0.10   0.15   0.05   0.05     0.10   0.1
         └────────────────────────────────────────────────────────────────────────┘
 ----
 
-Merk at vi med de radvise stem:[\text{softmax}]-operasjonene også har tvunget fram en forskjell mellom rader og kolonner i denne kvadratiske matrisen. Verdien i f.eks. posisjon (2, 5) betyr noe annet enn verdien i posisjon (5, 2). Mange sier litt for lettvint (etter min mening) at det første betyr at sannsynligheten der måler hvor relevant token 5 er for token 2 (og motsatt for det andre). Igjen kan det hende at dette blir en følge gjennom trening, men det er ikke gitt fra matematikken at det blir slik. Vi har imidlertid tvunget fram en usymmetri som treningen kan gi en betydning.
+Merk at vi med de radvise stem:[\text{softmax}]-operasjonene også har tvunget fram en forskjell mellom rader og kolonner i denne kvadratiske matrisen. Verdien i f.eks. posisjon (2, 5) betyr noe annet enn verdien i posisjon (5, 2). Mange sier litt for lettvint (etter min mening) at det første betyr at sannsynligheten der måler hvor relevant token 5 er for token 2 (og motsatt for det andre). Igjen kan det hende at dette blir en følge gjennom trening, men det er ikke gitt fra matematikken at det blir slik. Vi har imidlertid tvunget fram en usymmetri som treningen _kan_ gi en f.eks. en slik betydning.
 
 === 4. Vektet sum (Kontekstualisering)
 
@@ -322,7 +322,7 @@ z_{1,2} = a_{1,1} \cdot v_{1,2} + a_{1,2} \cdot v_{2,2} + \ldots  + a_{1,10} \cd
 z_{1, \: 12 \: 208} = a_{1,1} \cdot v_{1,\: 12 \: 208} + a_{1, \: 12 \: 208} \cdot v_{2,2} + \ldots  + a_{1,10} \cdot v_{10, \: 12 \: 208}
 ++++
 
-Koeffisientene stem:[a_{i,j}] her er nettopp sannsynlighetsverdiene (radene) i attention-matrisen vi har eksemplifisert. Radvektoren vi ser her representerer altså en vektor i det store vektorrommet med koeffisienter med slike koeffisienter. Jeg føler det er grunn til å være forsiktige med for konkrete språknære tolkninger av denne. Det som imidlertid ER sikkert, er at vi har utført en tydelig attention-operasjon (transformerte stem:[\mathbf{X}]-verdier er unyttet som soft weights i bestemmelsen av stem:[\mathbf{Z}]). Verdiene er sterkt avhengig av hvilke tokens som er benyttet til nå. Håpet er altså at nye tokens som produseres med dette er bedre knyttet til setningene som kommer før det, og dermed gjør modellen bedre egnet.
+Koeffisientene stem:[a_{i,j}] her er nettopp sannsynlighetsverdiene (radene) i attention-matrisen vi har eksemplifisert. Radvektoren vi ser her representerer altså en vektor i det store vektorrommet med koeffisienter med slike koeffisienter. Konkrete språknære tolkninger av denne bør man også i utgangspunktet være forsiktig med. Det som imidlertid _er_ sikkert, er at vi har utført en tydelig attention-operasjon (transformerte stem:[\mathbf{X}]-verdier er unyttet som soft weights i bestemmelsen av stem:[\mathbf{Z}]). Verdiene er sterkt avhengig av hvilke tokens som er benyttet til nå. Håpet er altså at nye tokens som produseres med dette er bedre knyttet til setningene som kommer før det, og dermed gjør modellen bedre egnet.
  
 === 5. Residual Add & Layer Norm (Stabilitet)
 
