@@ -361,6 +361,78 @@ Koeffisientene stem:[a_{i,j}] her er nettopp sannsynlighetsverdiene (radene) i a
 
 === FFN-laget
 
+Det er et par ulike varianter for FFN-laget, gjerne kalt Post-LN og Pre-LN.  Alle modeller inkluderer residual connection, layer norm og feed forward, men kan variere i rekkefølge og antall. De kan skisseres slik: 
+
+[source,text]
+----
+Post-LN:
+
+Input x
+   │
+   ▼
+┌──────────────────────┐
+│   Attention          │
+└──────────────────────┘
+   │
+   ▼
+(+ residual: X + Attn)
+   │
+   ▼
+LayerNorm
+   │
+   ▼   (kalles x₁)
+┌──────────────────────┐
+│        FFN           │
+│ (Feed Forward Net)   │
+└──────────────────────┘
+   │
+   ▼
+(+ residual: x₁ + FFN)
+   │
+   ▼
+LayerNorm
+   │
+   ▼
+Output
+----
+
+
+eller
+
+[source,text]
+----
+Pre-LN:
+
+Input x
+   │
+   ▼
+LayerNorm
+   │
+   ▼
+┌──────────────────────┐
+│   Self-Attention     │
+└──────────────────────┘
+   │
+   ▼
+(+ residual: x + Attn)
+   │
+   ▼   (kalles x₁)
+LayerNorm
+   │
+   ▼
+┌──────────────────────┐
+│        FFN           │
+└──────────────────────┘
+   │
+   ▼
+(+ residual: x₁ + FFN)
+   │
+   ▼
+Output
+----
+
+Sistnevnte er den som benyttes i ChatGPT. Vi beskriver her sistnevnte variant for rene å skille de to lagene fra hverandre, men det bør være enkelt å gå fra den ene til den andre ved å sette sammen elementene som beskrives i fortsettelsen.
+
 ==== 5. Residual Add & Layer Norm (Stabilitet)
 
 Det første vi gjør i neste steg er å utføre den første av to resudial connections. For FFN-laget i første blokk legger man den opprinnelige stem:[\mathbf{X}] til resultatet stem:[\mathbf{Z}]. Tanken bak er å inkludere tidligere versjon av en matrise i beregningen for å hindre at "signalet" (informasjon) dør ut.

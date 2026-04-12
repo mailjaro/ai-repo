@@ -941,6 +941,80 @@ den     │ 0.05   0.05   0.05   0.35   0.10   0.15   0.05   0.05     0.10   0.1
 </div>
 <div class="sect2">
 <h3 id="_ffn_laget">FFN-laget</h3>
+<div class="paragraph">
+<p>Det er et par ulike varianter for FFN-laget, gjerne kalt Post-LN og Pre-LN.  Alle modeller inkluderer residual connection, layer norm og feed forward, men kan variere i rekkefølge og antall. De kan skisseres slik:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-text" data-lang="text">Post-LN:
+
+Input x
+   │
+   ▼
+┌──────────────────────┐
+│   Attention          │
+└──────────────────────┘
+   │
+   ▼
+(+ residual: X + Attn)
+   │
+   ▼
+LayerNorm
+   │
+   ▼   (kalles x₁)
+┌──────────────────────┐
+│        FFN           │
+│ (Feed Forward Net)   │
+└──────────────────────┘
+   │
+   ▼
+(+ residual: x₁ + FFN)
+   │
+   ▼
+LayerNorm
+   │
+   ▼
+Output</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>eller</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-text" data-lang="text">Pre-LN:
+
+Input x
+   │
+   ▼
+LayerNorm
+   │
+   ▼
+┌──────────────────────┐
+│   Self-Attention     │
+└──────────────────────┘
+   │
+   ▼
+(+ residual: x + Attn)
+   │
+   ▼   (kalles x₁)
+LayerNorm
+   │
+   ▼
+┌──────────────────────┐
+│        FFN           │
+└──────────────────────┘
+   │
+   ▼
+(+ residual: x₁ + FFN)
+   │
+   ▼
+Output</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Sistnevnte er den som benyttes i ChatGPT. Vi beskriver her sistnevnte variant for rene å skille de to lagene fra hverandre, men det bør være enkelt å gå fra den ene til den andre ved å sette sammen elementene som beskrives i fortsettelsen.</p>
+</div>
 <div class="sect3">
 <h4 id="_5_residual_add_layer_norm_stabilitet">5. Residual Add &amp; Layer Norm (Stabilitet)</h4>
 <div class="paragraph">
@@ -1090,7 +1164,7 @@ den     │ 0.05   0.05   0.05   0.35   0.10   0.15   0.05   0.05     0.10   0.1
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-04-12 09:48:28 +0200
+Last updated 2026-04-12 11:46:25 +0200
 </div>
 </div>
 <script type="text/x-mathjax-config">
