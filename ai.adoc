@@ -33,9 +33,26 @@ Transformere har siden blitt grunnlaget for mange moderne språkmodeller. Ved å
 
 Denne utviklingen viser hvordan dagens AI-systemer ikke er resultatet av én enkelt idé, men av en gradvis oppbygning av konsepter, algoritmer og teknologiske fremskritt over tid.
 
+Det store gjennombruddet for store språkmodeller kom med lanseringen av ChatGPT 3 i juni 2020. Den etterfulgte ChatGPT 2 som kom i 2019, og var en stor skalering opp og en markant forbedring. Siden kom ChatGPT 4 i mars 2023 og CHatGPT 5 gradvis i 2025/2026.Andre fulgte opp, og f.eks. Gemini fra Google er nå i versjon 2.x som etterfulgte Gemini 1.5 i 2024 og Gemini 1.0 i 2023. Disse etterfulgte versjoner med andre navn (laMDA fra 2021, PaLM fra 2022 og PaLM 2 fra 2023). Og det fins selvsagt mange andre.
+
+Gemini har vært multimodal fra starten (kan håndtere flere typer input og output: tekst, bilder, video og lyd) i motsetning til ChatGPT som ble multimodal først i versjon 4. Gemini er å oppfatte som én modell med flere innganger (for ulike typer input), mens ChatGPT kobler sammen flere modeller, f.eks. ChatGPT + DALL-E for bildehåndtering. 
+
+Arkitekturene i senere modeller holdes gjerne hemmelig, men man er ganske sikre på at de alle er av typen vi etter hvert skal beskrive her:
+
+- transformer-baserte
+- bygget opp av:
+        - blokker med attention-lag og
+        - FFN-lag
+        - residual connections
+- trenet med nest-token-prediction
+
+men sikkert med utvidelser av størrelse og treningsdata, og med diverse forbedringer. Framtiden vil vise hvordan utviklingen går videre. 
+
 ## Tradisjonell AI-arkitektur: Nodenettverk
 
-Et tradisjonelt nodenettverk, eller et nevralt nettverk, består av noder organisert i lag, der hvert lag er koblet til det neste gjennom vektede forbindelser, også kalt synapser. Figuren nedenfor viser et forenklet nettverk, med et input-lag, tre såkalte skjulte lag og et output-lag. Man sier at dette er et nodenettverk med 4 nivåer (eller har dybde 4). 
+Før vi går løs på moderne modeller, skal vi se på et mer tradisjonelt nodenettverk, eller et nevralt nettverk. Disse har en del likhetstrekk, og det kan være lurt å bli introdusert til et tradisjonelt nettverk først for å få en føling med ingrediensene uten å måtte fordype seg i for mange detaljer. Tradisjonelle nodenettverk er dessuten fortsatt i bruk og kan løse selv nokså komplekse karakteriseringsoppgaver. Skiftgjenkjennelse er et eksempel på noe relativt små modeller av denne type kan håndtere.
+
+Et tradisjonelt nodenettverk består av noder organisert i lag, der hvert lag er koblet til det neste gjennom vektede forbindelser, også kalt synapser. Figuren nedenfor viser et forenklet nettverk, med et input-lag, tre såkalte skjulte lag og et output-lag. Man sier at dette er et nodenettverk med 4 nivåer (eller har dybde 4). 
 
 image::images/ai-network.png[800,600]
 
@@ -48,9 +65,11 @@ I figuren er hver sirkel en node, og linjene mellom nodene representerer synapse
 
 Når nodenettverket kjører (såkalt forward flow), mates en input-vektor (tenk spørsmål) inn i input-nodene og transformeres suksessivt gjennom alle lagene til et resultat (output-vektor) havner i output-nodene (tenk svaret på spørsmålet). I hvert lag utføres matriseoperasjoner mellom vektene og input-vektoren, hvilket resulterer i en ny vektor som så sendes videre til neste lag for tilsvarende sett av beregninger.
 
-Vi skal straks se på flere detaljer, men bør nevne at det gjerne finnes flere elementer i grunnstrukturen enn det viste. F.eks. knyttes gjerne såkalte bias-vektorer stem:[\mathbf{b^{(i)}}] til hvert lag som blandes inn i beregningene.
+Vi skal straks se på flere detaljer, men bør nevne at det finnes flere elementer i grunnstrukturen enn det viste. F.eks. knyttes gjerne såkalte bias-vektorer stem:[\mathbf{b^{(i)}}] til hvert lag som blandes inn i beregningene.
 
-Når man trener nettverket starter prosessen i motsatt ende (backward flow). Vi skal si mer om dette senere, men kan kort si at det først beregnes en matematisk avstand mellom output-vektor og en vektor som representerer riktig svar, en såkalt tapsfunksjon. Verdien gis som startverdi til backdrop-algoritmen, som er en gradient-basert minimeringsalgoritme som her anvendes på vektrommet (den totale variasjonen av alle vektmatriser, bias-vektorer og andre numeriske parametre). Ved nok slik trening vil alle vektene og øvrige verdier å få gunstige verdier, i den forstand at de er optimalisert for å minimere tapsfunksjonen. I praksis betyr det at modellen gjerne svarer "Paris" på spørsmål om "hovedstad i Frankrike", og den svarer "bygg" på spørsmål om "kornslag benyttet i malt-whisky" osv. Dette er en forenkling, men kan være et greit bilde å ha i starten. Modeller av denne typen er ikke egnet som chatbots. De har likevel nok kompleksitet til å løse flere karakteriseringsoppgaver. Skiftgjenkjennelse er et eksempel på noe relativt små modeller av denne type kan håndtere. Chatbots baserer seg på en annen arkitektur og flere ting må også skje både før, under og etter en kjøring.
+Når man trener nettverket starter prosessen i motsatt ende (backward flow). Vi skal si mer om dette senere, men kan kort si at det først beregnes en matematisk avstand mellom output-vektor og en vektor som representerer riktig svar, en såkalt tapsfunksjon. Verdien gis som startverdi til backdrop-algoritmen, som er en gradient-basert minimeringsalgoritme som her anvendes på vektrommet (den totale variasjonen av alle vektmatriser, bias-vektorer og andre numeriske parametre). Ved nok slik trening vil alle vektene og øvrige verdier å få gunstige verdier, i den forstand at de er optimalisert for å minimere tapsfunksjonen. I praksis betyr det at modellen svarer riktig ikke bare på den er trent på, men også i nye settinger.
+
+Dette enkle bildet med ett spørsmål og ett svar kan være greit å ha i starten. Men det er klart for chatbots og språkmodeller, er det flere ting må også skje både før, under og etter en kjøring.
 
 Når det gjelder input, som kan omtales likt for både tradisjonelle og moderne modeller, så holder det foreløpig å si at bruker-input via numeriske tokens ender opp som en følge av input-vektorer:
 
@@ -61,7 +80,7 @@ Når det gjelder input, som kan omtales likt for både tradisjonelle og moderne 
 
 Disse vektorene er relativt lange. Dimensjonene varier med anvendelsen, men kan være flere tusen elementer lange. De sendes en etter en gjennom nettverket, og resultatet blir en følge av output-vektorer stem:[\mathbf{y^{(1)}, y^{(2)}, y^{(3)},} \: ...]
 
-La oss nå se på den sentrale kjøringen (forward flow) av et tradisjonelt nodenett. Selv om vi snart skal fokusere på moderne AI-modeller, kan dette likevel være nyttig ved at man kan forstå elementene i en kjøring uten å måtte fordype seg i for mange detaljer. Den viser bl.a. hvordan nodenettverk kan representeres av et antall matriser og kjøres ved ulike matriseoperasjoner.
+La oss nå se på den sentrale kjøringen (forward flow) av et tradisjonelt nodenett. Vi får da illustrert hvordan nodenettverk kan representeres av et antall matriser og kjøres ved ulike matriseoperasjoner.
 
 En input-vektor stem:[\mathbf{x}^{(1)}] prosesseres på følgende måte i denne modellen:
 
@@ -90,7 +109,7 @@ En input-vektor stem:[\mathbf{x}^{(1)}] prosesseres på følgende måte i denne 
 \mathbf{z_k} = \sigma ( \mathbf{W}^{(k)} \cdot \mathbf{z_{k-1}} + \mathbf{b}^{(k)})
 ++++
 
-Bias-vektorene våre, som virker på hvert sitt lag, må ha en lengde (dimensjon) som er lik antall noder i laget under seg for at dette skal passe.
+Bias-vektorene våre må ha samme størrelsen som output-vektoren fra laget, altså antall noder stem:[m].
 
 Output av input stem:[\mathbf{x_1}] kan vi betegne stem:[\mathbf{y_1}], og er altså lik vektoren stem:[\mathbf{z_k}] vist over. Når denne er beregnet, sendes neste input-vektor stem:[\mathbf{x_2}] inn i samme prosess, og vi ender til slutt opp med en følge stem:[\mathbf{y^{(1)}, y^{(2)}, y^{(3)} ...}] av output-vektorer.
 
@@ -108,32 +127,34 @@ Lag-operasjonene er i bunn og lineære matriseoperasjoner, men med et tilleggsbi
 
 (der stem:[\phi(x)] er kumulativ normalfordeling). stem:[\text{GELU}] er vanligst å bruke i moderne språkmodeller.
 
-Uansett hvilken man velger, er ikke-linearitet helt avgjørende for at et nodenettverk, tradisjonelle såvel som moderne, skal fungere. Uten dette blir alt forutsigbart og dødt. Men det ønskes nokså subtile endringer her, noe som ikke ødelegger vektingen, som kan beregnes effektivt og som samspiller godt med treningsmetodene (backdrop). Det kan nevnes at det forskes på andre operasjoner enn rene matriseoperasjoner her (andre effektive operasjoner som også gjør store tall store og små tall små, som ikke dreper signalene). Polynomer er bl.a. forsøkt.
+Uansett hvilken man velger, er ikke-linearitet helt avgjørende for at et nodenettverk, tradisjonelle såvel som moderne, skal fungere. Uten dette blir alt forutsigbart og dødt. Men det ønskes nokså subtile endringer her, noe som ikke ødelegger vektingen, som kan beregnes effektivt og som samspiller godt med treningsmetodene (backdrop).
 
-Dette var forward flow uten attention-matriser. Som antydet i historikk-kapittelet (artikkelen All You Need Is Attention), bidrar attention-matriser betydelig til kvaliteten av moderne modeller. Men for å forstå hva det er, må vi se nærmere på blokk-baserte AI-modeller og inkludere flere operasjoner.
+Det kan også nevnes at det forskes på andre operasjoner enn rene matriseoperasjoner her (andre effektive operasjoner som også gjør store tall store og små tall små, som ikke dreper signalene). Polynomer er bl.a. forsøkt.
+
+Dette var forward flow uten attention-matriser. Som antydet i historikk-kapittelet (artikkelen All You Need Is Attention), bidrar attention-matriser betydelig til kvaliteten av moderne modeller. Men for å forstå hva det er, er det på tide å se nærmere på blokk-baserte AI-modeller og inkludere flere operasjoner.
 
 == Moderne AI-arkitektur: Blokk-strukturer
 
-Moderne arkitekturer har en annen oppbygging enn det nevnte. Man kan godt oppfatte dem som en sammensetning av flere nodenettverk, men det er bedre å tenke på strukturen som bestående av et antall blokker. Hver blokk består av to lag, et attention-lag (også kalt self-attention-lag) og ett feed forward lag (betegnet FFN- eller MLP-lag). Blokkene, som i antall kan være rundt 100 i moderne arkitekturer, er på input-parametre nær like, og er koblet sammen i en sekvens, der output fra én blokk mates inn i neste blokk til man til slutt ender opp med en output-matrise stem:[\mathbf{Y}] (i figuren betegnet stem:[\mathbf{X_n}] = output fra siste blokk).
+Moderne arkitekturer har en annen oppbygging enn det nevnte. Man kan godt oppfatte dem som en sammensetning av flere nodenettverk, men det er bedre å tenke på strukturen som bestående av et antall blokker. Hver blokk består av to lag, et attention-lag (også kalt self-attention-lag) og ett feed forward lag (betegnet FFN- eller MLP-lag). Blokkene, som i antall kan være rundt 100 i moderne arkitekturer, er på input-parametre nær like, og er koblet sammen i en sekvens, der output fra én blokk mates sok input til neste blokk til man til slutt ender opp med en output-matrise stem:[\mathbf{Y}] (i figuren betegnet stem:[\mathbf{X_n}] = output fra siste blokk).
 
 image::images/full-transformer.png[800,600]
 
-Et attention-lag i en transformer-blokk representeres av et sett av tre vektmatriser stem:[\mathbf{W^Q}], stem:[\mathbf{W^K}] og stem:[\mathbf{W^V}]. FFN-laget representeres av en vektmatrise stem:[\mathbf{W^{(i)}}], samt en bias-matrise og ulike normaliseringsparametre.
+Et attention-lag i en transformer-blokk representeres av et sett av tre vektmatriser stem:[\mathbf{W^Q}], stem:[\mathbf{W^K}] og stem:[\mathbf{W^V}]. FFN-laget representeres av noen vektmatriser stem:[\mathbf{W^{(i)}}], samt en bias-matrise og ulike normaliseringsparametre.
 
 Merk at moderne litteratur begrepet lag (“layer”) annerledes i enn tradisjonelle lag i nodenettverk. Med dybden av en slik blokkarkitektur mener man antall blokker. Og vanlig dybde for større AI-modeller kan altså være rundt 100.
 
 Chatbots er egentlig designet for å finne nest ord fra en sekvens av ord. De er ikke designet for bare å gi ett svar på ett kort spørsmål, som vi har illustrert situasjonen med til nå. ChatBots besvarer egentlig: "Hva er neste token gitt hele teksten så langt?” Og “hele teksten” inkluderer:
 brukerens spørsmål alt modellen selv har generert. Vi skal se på alle detaljer rundt dette og alle konkrete beregninger snart.
 
-== 1. Prompt-tokenisering og strukturering
+== Prompt-tokenisering og strukturering
 
-Vår beskrivelse til nå av hva som skjer når vi spør er en Chatbot (ett-ords spørmål, ett-ords svar), har vært forenklet. Forward flow er uansett den viktigste delen, men flere ting skjer både før og etter selve kjøringen. La oss ta det i rekkefølge.
+Forward flow er fortsatt den viktigste delen av en kjøring, men flere ting skjer både før og etter dette. La oss ta det i rekkefølge.
 
 Teksten brukeren skriver inn blir aller først pre-prosessert/vasket. Unødvendige tekst kan bli fjernet, som eventuelle HTML-tags, rare linjeskift og annet, og teksten kan bli ryddet noe opp i. Visse kontroll-tokens og format-annotasjoner vil også bli lagt til av systemet. Start av teksten, separasjon av setninger og markups som tydelig skiller referanse til bruker og assistent, er eksempel på slike annotasjoner.
 
 Etter dette vil neste steg være tilordning av tokens.
 
-== 2. Tokens og embedding-vektorer
+== Tokens og embedding-vektorer
 
 Tekst representeres av embedding-vektorer via tokens. En token er en numerisk representasjon av et ord, en del av et ord eller et tegn, avhengig av hvordan modellen er trent. Spørsmålstegn og andre symboler er altså egne tokens, og sammensatte ord deles typisk opp i flere for lettere å reflektere semantikken. Ukjente ord vil bli delt opp, om nødvendig til enkelttegn. Et token fungerer som en indeks eller referanse til en embedding-vektor i en lært/trent modell, en såkalt embedding matrix:
 
@@ -184,13 +205,15 @@ Input-matrise X:
        └─────────────────────┘
 ----
 
+Disse radvektorene er viktige å fokusere på. Ved kjøring vil disse rent matematisk foreta en reise i vektorrommet de lever i. Lineære og ikke-lineære operasjoner på matrisen dreier, flytter og strekker vektorene på ulike måter (lineært og ikke-lineært). Særlig er det verdt å merke seg at de fleste matriseoperasjonene endrer vektorene ved faste vekter (vektmatriser), en form for horisontal endring, mens attention-mekanismen endrer vektorene vertikalt, ved at endringene baserer seg på øvrige radvektorer i matrisen. Dette er lurt å ha i mente når man fordyper seg i beregningsdetaljene.
+
 Antall rader i stem:[\mathbf{X}] vil være antall tokens i spørsmålet. Så om vektorlengdene er stem:[12 \: 288] og antall input-tokens er stem:[10], vil stem:[\mathbf{X}] (og output-matrise stem:[\mathbf{Y}] ) være en stem:[10 \times 12 \: 288]-matrise.
 
-(I virkeligheten er det mer effektivt å velge en rad-antall som bedre reflekter mer effektive datastørrelser som 128, 512 etc, slik at stem:[\mathbf{X}]  gjerne paddes med 0'ere).
+(I virkeligheten er det mer effektivt å velge en rad-antall som bedre reflekter mer effektive datastørrelser som 128, 512 etc, slik at stem:[\mathbf{X}] gjerne paddes med 0'ere).
 
-Moderne arkitektur opererer med matriser gjennom hele forward flow, ikke enkeltvektorer som i tradisjonelle nodenettverk, og modellen produserer i hvert run en output-matrise stem:[\mathbf{Y}].
+Det vi kan merke oss med en gang er at moderne arkitektur opererer med matriser gjennom hele forward flow, ikke enkeltvektorer som i tradisjonelle nodenettverk. Modellen produserer i hvert run en output-matrise stem:[\mathbf{Y}] av samme form som input-matrise stem:[\mathbf{X}].
 
-== 3. Moderne forward flow: Transformer blocks
+== Moderne forward flow: Transformer blocks
 
 En ChatBot forsøker altså finne beste, neste token (fra de som er angitt og funnet til nå). Den gjør det, som vi skal se, ved å legge embeddingsvektoren tilhørende dette token'et til forrige input-matrise stem:[\mathbf{X}] og dermed produsere en ny input-matrise stem:[\mathbf{X'}] med radvektorer for alle tidligere tokens samt den nye radvektoren.
 
@@ -198,7 +221,9 @@ La oss se nærmere på hva som skjer i en transformer-blokk. Vi tar utgangspunkt
 
 Det er 6 hovedtrinn i prosessen, hvorav steg 1-4 utgjør det som kalles attention, og som skjer i attention-laget. Dette er altså det som har vist seg så viktig for moderne AI-modeller. Trinn 5 og 6 skjer i FNN-laget, hvilket inkluderer såkalt residual connections. Vi skal først vise beregningene før vi diskuterer betydninger og implikasjoner av beregningene.
 
-=== 1. Attention-lag: Opprettelse av projeksjonene Q, K og V
+=== Attention
+
+==== 1. Opprettelse av projeksjonene Q, K og V
 
 Input-matrise stem:[\mathbf{X}] er en stem:[n×d]-matrise, la oss si. Her er stem:[d] den dimensjonerende størrelsen. Dette er lengden av vektorene (radvektorene) vi opererer med i modellen (opptil stem:[12 \: 288] i ChatGPT 3).
 
@@ -210,11 +235,21 @@ Det første som skjer er at input-matrisen stem:[\mathbf{X}] multipliseres med t
 
 - stem:[\mathbf{V=X⋅W^V}] (Values)
 
-Merk at det disse navnen indikerer språklige roller, som kanskje eller kanskje ikke oppnås for matrisene. Det bør understrekes at disse ikke trenes forskjellig. Eventuelle grammatiske egenskaper er i tilfelle bare en indirekte følge av deres matematiske plassering i formlene og konskvensene dette for i treningen.
+Merk at det disse navnen indikerer språklige roller, som kanskje eller kanskje ikke oppnås for matrisene. Det bør understrekes at disse ikke trenes forskjellig. Eventuelle grammatiske egenskaper er i tilfelle bare en indirekte følge av deres matematiske plassering i formlene og konsekvensene dette får i treningen.
+
+Ordne kommer uansett fra følgende:
+
+- Query: "Dette leter jeg etter i andre ord."
+
+- Key: "Dette er merkelappen min som andre kan lete etter."
+
+- Value: "Dette er informasjonen jeg faktisk bærer på."
+
+(men etter mitt og manges syn, er dette primært historiske navn.)
 
 Glem heller ikke at disse matrisene er tre projeksjoner av input-matrisen.
 
-=== 2. Attention-lag: Relasjoner
+==== 2. Relasjoner
 
 Idéen bak attention har å gjøre med at man i sterkere grad enn i tidligere modeller, forsøker å skue tilbake til tidligere ord i spørsmålet og til nye produserte tokens, når man bestemmer neste token i følgen. Når en input-matrise multipliseres med vektmatriser, så flytter og strekker dette radvektorene fra matrisen i det store vektorrommet, hvilket er vel og bra. Resultatet påvirkes av statiske, godt trenede vekter (såkalte harde vekter), men påvirkes ikke tidligere tokens/input-vektorer, selv om jo stem:[\mathbf{X}] inneholder dette (slik vi føyer embeddingsvektorer til nye tokens til input-matrisene i forkant av hver kjøring). For å få til attention, må vi på en eller annen måte la stem:[\mathbf{X}] påvirke seg selv, altså at vi erstatter stem:[\mathbf{X}] med en «stem:[\mathbf{X}] påvirket av stem:[\mathbf{X}]»-matrise. Her kommer stem:[\mathbf{Q}], stem:[\mathbf{K}] og stem:[\mathbf{V}] inn, som alle er direkte projeksjoner av stem:[\mathbf{X}] (tenk versjoner av stem:[\mathbf{X}]). Vi bør på en eller annen måte erstatte stem:[\mathbf{X}] med en matrise stem:[\mathbf{Z}] som er satt samme av disse. Dette skjer i steg 2, 3 og 4.
 
@@ -227,7 +262,7 @@ Først gjør man
 
 der man deler på en skaleringsfaktor stem:[\sqrt{d_k})] for stabilitet. Dette gir en stem:[n×n] matrise med såkalte scores-verdier.
 
-Merk at om bruker-spørsmålet bestod av stem:[10] tokens, så blir resultatet en stem:[10×10]-matrise (om vi ser bort fra eventuell padding). Dette må derfor ha noe med vår 10 input-tokens å gjøre. Under ser vi et eksempel på resultatmatrisen på dette stadiet i beregningen. Eller mer presist ville dette nøyaktig vært det vi hadde fått om vi multiplisert stem:[\mathbf{X}] og stem:[\mathbf{X^T}] direkte. Nå er radvektorene først endret av harde vektmatriser, dvs. de er flyttet lineært rundt i vektrommet og representerer ikke konkrete noe tokens med sine nåværende verdier (i prinsippet kunne de til og med ha representert andre tokens, selv om dette er ekstremt lite sannsynlig). Det virker likevel rimelig å si at dette er sammenhengen mellom token'ene etter radvektorenes ulike "reiser" i vektrommet bestemt av stem:[\mathbf{W^Q}] og stem:[\mathbf{W^K}].
+Merk at om bruker-spørsmålet bestod av stem:[10] tokens, så blir resultatet en stem:[10×10]-matrise (om vi ser bort fra eventuell padding). Dette har derfor med vår 10 input-tokens å gjøre. Under ser vi et eksempel på resultatmatrisen på dette stadiet i beregningen. På en måte er det en versjon stem:[\mathbf{X}] og stem:[\mathbf{X^T}], men etter at rad-vektorene (som korresponderte til tokens) har blitt endret av harde vektmatriser, dvs. de er flyttet lineært rundt i vektrommet. Vektorene representerer ikke lenger konkrete tokens (i prinsippet kunne de til og med ha representert andre tokens, selv om dette er _ekstremt_ lite sannsynlig), men denne konstellasjonen gjør det mulig for treningen å se/spille på token'ene videre.
 
 Uansett er hvert tall resultat av skalarproduktet mellom en radvektor i stem:[\mathbf{Q}] og en radvektor i stem:[\mathbf{K}]. Tallet er altså relatert til vinkelen mellom vektorene, men ikke helt og fullt siden man ikke har dividert med vektorlengdene (og fått cosinus-vinkel). Tall kan bli relativt store både fordi vinkelen mellom dem er liten eller vektorene er lange f.eks. Negative verdier er fullt mulig her, men er utelatt av hensyn til pen, enkel formatering.
 
@@ -252,7 +287,7 @@ den     │  0.4    0.5    0.5    3.2    1.1    1.6    0.3     0.4      0.9    1
 
 Tallene sier trolig noe om hvor nærme token som "hund" og "parken" er i situasjonen, eller kanskje hvor mye det ene påvirker det andre. Men som så ofte før, man bør være litt kritisk til å hoppe på språklige karakteriseringer for raskt. Beregningene sier egentlig noe om retningen mellom vektorene for token'ene etter at vektorene har blitt flyttet, dreid og strukket i vektorrommet via trente vekter. Man legger sånn sett tilrette for at treningen kan premiere grammatikalske versjoner av "nærhet" og "påvirkning", men man kan ikke ta for gitt at AI opererer slik.
 
-=== 3. Softmax (Sannsynlighetsvekter)
+==== 3. Softmax (Sannsynlighetsvekter)
 
 Vi kjører deretter disse skårene radvis gjennom en stem:[\text{Softmax}]-funksjon. Dette tvinger tallene til å bli mellom 0 og 1, og summen av hver rad blir 1.0 (altså en sannsynlighetfordeling i hver rad).
 
@@ -291,7 +326,7 @@ den     │ 0.05   0.05   0.05   0.35   0.10   0.15   0.05   0.05     0.10   0.1
 
 Merk at vi med de radvise stem:[\text{softmax}]-operasjonene også har tvunget fram en forskjell mellom rader og kolonner i denne kvadratiske matrisen. Verdien i f.eks. posisjon (2, 5) betyr noe annet enn verdien i posisjon (5, 2). Mange sier litt for lettvint (etter min mening) at det første betyr at sannsynligheten der måler hvor relevant token 5 er for token 2 (og motsatt for det andre). Igjen kan det hende at dette blir en følge gjennom trening, men det er ikke gitt fra matematikken at det blir slik. Vi har imidlertid tvunget fram en usymmetri som treningen _kan_ gi en f.eks. en slik betydning.
 
-=== 4. Vektet sum (Kontekstualisering)
+==== 4. Vektet sum (Kontekstualisering)
 
 Vi bruker så attention-matrisen som vekter (de kalles soft weights, siden de ikke er statiske (harde), men dynamisk bestemt) på stem:[\mathbf{V}]-matrisen:
 
@@ -322,20 +357,22 @@ z_{1,2} = a_{1,1} \cdot v_{1,2} + a_{1,2} \cdot v_{2,2} + \ldots  + a_{1,10} \cd
 z_{1, \: 12 \: 208} = a_{1,1} \cdot v_{1,\: 12 \: 208} + a_{1, \: 12 \: 208} \cdot v_{2,2} + \ldots  + a_{1,10} \cdot v_{10, \: 12 \: 208}
 ++++
 
-Koeffisientene stem:[a_{i,j}] her er nettopp sannsynlighetsverdiene (radene) i attention-matrisen vi har eksemplifisert. Radvektoren vi ser her representerer altså en vektor i det store vektorrommet med koeffisienter med slike koeffisienter. Konkrete språknære tolkninger av denne bør man også i utgangspunktet være forsiktig med. Det som imidlertid _er_ sikkert, er at vi har utført en tydelig attention-operasjon (transformerte stem:[\mathbf{X}]-verdier er unyttet som soft weights i bestemmelsen av stem:[\mathbf{Z}]). Verdiene er sterkt avhengig av hvilke tokens som er benyttet til nå. Håpet er altså at nye tokens som produseres med dette er bedre knyttet til setningene som kommer før det, og dermed gjør modellen bedre egnet.
- 
-=== 5. Residual Add & Layer Norm (Stabilitet)
+Koeffisientene stem:[a_{i,j}] her er nettopp sannsynlighetsverdiene (radene) i attention-matrisen vi har eksemplifisert. Radvektoren vi ser her representerer altså en vektor i det store vektorrommet med koeffisienter med slike koeffisienter. Konkrete språknære tolkninger av denne bør man også i utgangspunktet være forsiktig med. Det som imidlertid _er_ sikkert, er at vi har utført en tydelig en form for vertikal operasjon, en attention-operasjon (transformerte stem:[\mathbf{X}]-verdier er unyttet som soft weights i bestemmelsen av stem:[\mathbf{Z}]). Verdiene er sterkt avhengig av hvilke tokens som er benyttet til nå. Håpet er altså at nye tokens som produseres med dette er bedre knyttet til setningene som kommer før det, og dermed gjør modellen bedre egnet.
 
-Det første vi gjør er å utføre den første av to resudial connections. For FFN-laget i første blokk legger man den opprinnelige stem:[\mathbf{X}] til resultatet stem:[\mathbf{Z}]. I etterfølgende blokker er det output-vektoren fra forrige blokk som benyttes som input-blokk her. Deretter normaliserer tallene slik at de har et gjennomsnitt på 0 og et standardavvik på 1.
+=== FFN-laget
+
+==== 5. Residual Add & Layer Norm (Stabilitet)
+
+Det første vi gjør i neste steg er å utføre den første av to resudial connections. For FFN-laget i første blokk legger man den opprinnelige stem:[\mathbf{X}] til resultatet stem:[\mathbf{Z}]. Tanken bak er å inkludere tidligere versjon av en matrise i beregningen for å hindre at "signalet" (informasjon) dør ut.
+
+I etterfølgende blokker er det output-vektoren fra forrige blokk som benyttes som input-blokk her.
+
+Deretter normaliserer tallene slik at de har et gjennomsnitt på 0 og et standardavvik på 1.
 
 [stem]
 ++++
 \mathbf{X_{mid}} = \text{LayerNorm}(\mathbf{Z} + \mathbf{X})
 ++++
-
-
-RESTEN AV DOKUMENTET ER BARE KLADD OG BESTÅR AV LØSREVNE UTSAGN SOM IKKE ER GJENNOMGÅTT
-
 
 Funksjonen stem:[\text{LayerNorm}] (Layer Normalization) er en kritisk komponent for å holde matematikken stabil. Uten denne ville tallene i matrisen enten vokst seg gigantiske eller krympet til null etter 12 blokker, noe som gjør det umulig for modellen å lære. For en vektor stem:[\mathbf{x}] med dimensjon stem:[d], beregnes LayerNorm slik:
 
@@ -350,11 +387,9 @@ Funksjonen stem:[\text{LayerNorm}] (Layer Normalization) er en kritisk komponent
 [start=2]
 1. Finner variansen (stem:[\sigma^2]):
 
-Man legger ofte til et bittelite tall (stem:[\epsilon], f.eks. stem:[10^{-5}]) for å unngå divisjon med null.
-
 [stem]
 ++++
-\sigma^2 = \frac{1}{d} \sum_{i=1}^{d} (x_i - \mu)^2 + \epsilon
+\sigma^2 = \frac{1}{d} \sum_{i=1}^{d} (x_i - \mu)^2
 ++++
 
 [start=3]
@@ -362,20 +397,23 @@ Man legger ofte til et bittelite tall (stem:[\epsilon], f.eks. stem:[10^{-5}]) f
 
 [stem]
 ++++
-{\hat{x}_i} = \frac{x_i - \mu}{\sigma}
+{\hat{x}_i} = \frac{x_i - \mu}{\sqrt{\sigma²+\epsilon}}
 ++++
+
+Man legger ofte til et bittelite tall stem:[\epsilon] (f.eks. stem:[10^{-5}]) for å unngå divisjon med null.
+
 
 [start=4]
 1. Skalerer og forskyver vektoren:
 
-For at modellen skal kunne "angre" normaliseringen hvis den trenger det, lærer den to egne parametere for hvert lag: stem:[\gamma]  og stem:[\beta].
+For at modellen skal kunne juster normaliseringen basert på læring, legger den til to egne parametere for hvert lag: stem:[\gamma]  og stem:[\beta], som så er gjenstand for trening. Dette gjeninnfører fleksibilitet/læring på dette punktet (siden normaliseringen var fast):
 
 [stem]
 ++++
 y_i = \gamma \cdot \hat{x}_i + \beta
 ++++
 
-=== 6. Feed-Forward Network (Prosessering)
+==== 6. Prosessering
 
 Til slutt går hver rad i stem:[\mathbf{X_{mid}}] gjennom et lite nodenettverk helt uavhengig av de andre radene. Dette består vanligvis av to lineære lag med en aktiveringsfunksjon (som stem:[\text{ReLU}] eller stem:[\text{GeLU}]) i mellom.
 
@@ -389,169 +427,40 @@ Til slutt går hver rad i stem:[\mathbf{X_{mid}}] gjennom et lite nodenettverk h
 \mathbf{X_{out}} = \text{LayerNorm}(\mathbf{X_{mid}} + (\mathbf{H} \cdot \mathbf{W^{(2)}} + \mathbf{b_2}))
 ++++
 
-Disse beregningene gjentas gjennom hver blokk, som er like i struktur, men som har sine egne parametre, egne vektmatriser osv. Ouptut fra hvert lag føres inn som input til neste lag til vi får ut output-matrisen stem:[\mathbf{Y}] fra siste blokk.
+Disse beregningene gjentas gjennom hver blokk, som er like i struktur, men som har sine egne parametre, egne vektmatriser osv. Output fra hvert lag føres inn som input til neste lag til vi får ut output-matrisen stem:[\mathbf{Y}] fra siste blokk.
 
-*Diskusjon og implikasjoner*
+== Etter forward flow: Sampling og dekoding
 
-Stegene 1-4 er det som kalles attention.
+Chatbots ikke bare leverer ett svar, men forsøker å finne beste/mest sannsynlige neste token i følge av tokens. Dette er det grunnleggende i hvordan chatbots produserer sine sammensatte svar. Etter at input-matrise stem:[\mathbf{X}] av modellen har blitt transformert til output-matrise stem:[\mathbf{Y}] av samme form, tar man siste rad fra denne og prosesserer videre. I eksempelet vårt med 10 input-tokens, tar man altså ut en kopi av tiende rad stem:[\mathbf{y^{10}}]. Det  høres kanskje naturlig ut at man tar utgangspunkt siste rad for å finne neste token, men det er bare på grunn av at treningen baserer seg på dette, at dette er optimalt. Hver en rad i stem:[\mathbf{Y}] startet reisen som en vektor tilhørende input-token'et og har nå endt som en annen vektor i vektorrommet basert på hauger av trenede input-parametre, attention-mekanismer og alt. Det er i utgangspunktet ikke sikkert at siste radvektor sånn sett har mer å fortelle om neste token enn andre radvektorer, men treningen sørger altså for det.
 
-*(1) Transformasjonen til Q, K og V (Fleksibiliteten)*
+Noen modeller legger til en 11'te radvektor med tilfeldig innhold intielt isteden, og tar 11'te radvektor i stem:[\mathbf{Y}] som utgangspunkt for neste token. Det høres kanskje mer naturlig ut, men forskjellen har tydeligvis ikke så mye å si.
 
-I tradisjonell AI er en vektor mer statisk. I attention-delen bruker man stem:[\mathbf{W_Q}], stem:[\mathbf{W_K}] og stem:[\mathbf{W_V}] til å la ordet presentere seg på tre forskjellige måter samtidig:
-
-- Query: "Dette leter jeg etter i andre ord."
-
-- Key: "Dette er merkelappen min som andre kan lete etter."
-
-- Value: "Dette er informasjonen jeg faktisk bærer på."
-
-Dette er viktig fordi det lar modellen lære forskjellige typer relasjoner. Én attention-blokk kan lære å se etter subjektet i en setning, mens en annen lærer å se etter adjektiver.
-
-*(2) Skalarproduktet Q⋅KT (Sammenligningen)*
-
-Dette er det mest kritiske punktet. Ved å gange Query-matrisen med den transponerte Key-matrisen, tvinger vi modellen til å sammenligne alle ord med alle ord.
-
-- Hvis en Query og en Key "peker i samme retning" (er matematisk like), blir tallet høyt.
-
-- Dette skaper en dynamisk vektmatrise som endrer seg for hver eneste setning. Dette er "magien" – vektene er ikke faste, de oppstår i sanntid basert på konteksten.
-
-*(3) Softmax-operasjonen (Fokuseringen)*
-
-Uten Softmax ville attention-matrisen bare vært en tabell med tilfeldige tall. Softmax tvinger modellen til å prioritere. Den må velge hvilke ord som er viktigst.
-
-- Hvis et ord får 0.9 i vekt, betyr det at modellen "fokuserer" nesten alt sitt intellekt på akkurat det ordet i det øyeblikket.
-
-*(4) Blandingen: Weights⋅V (Kontekstualiseringen)*
-
-Dette er selve "produktet" av attention. Vi bruker vektene vi fant til å lage en ny representasjon av hvert ord.
-
-- Inngang: Ordet "bank".
-
--Attention-prosess: Oppdager ordet "penger" i nærheten.
-
-- Utgang: En ny vektor for "bank" som er "farget" av vektoren for "penger".
-
-Hvorfor kaller vi det "Attention"?
-
-Det kalles attention (oppmerksomhet) fordi modellen bokstavelig talt lærer å flytte oppmerksomheten sin.
-
-Mens Attention handler om kommunikasjon, handler Residual Connections og Feed-Forward om stabilitet og kunnskapslagring.
-
-*(5) og (6) Residual Connection (Motorveien)*
-
-En Residual Connection (også kalt Skip Connection) er den pilen som går utenom en modul og legger sammen inngangen med utgangen: Xut​=LayerNorm(Xinn​+Modul(Xinn​)).
-Hva det bidrar med i prosessen:
-
-- Bevaring av identitet: Det sørger for at den opprinnelige informasjonen (hvilke ord som faktisk sto i setningen) ikke blir vasket bort av de kompliserte matematiske operasjonene i Attention-delen.
-
-- Inkrementelle endringer: I stedet for at hver blokk må finne opp hjulet på nytt, trenger den bare å finne ut: "Hva er den lille tingen jeg skal legge til den eksisterende forståelsen?"
-
-Implikasjoner for trening:
-
-- Løser "Gradient-problemet": Under trening sender vi feilsignaler (gradienter) bakover i nettverket. I dype nettverk uten residualer blir disse signalene ofte borte (de dør ut). Residual-forbindelsene fungerer som en superleder som lar feilsignalet flyte nesten uhindret helt tilbake til de første lagene.
-
-- Raskere konvergens: Modellen lærer mye fortere fordi den starter med en fungerende "identitets-funksjon" (den bare sender input videre) og gradvis lærer seg å legge til nyttig kompleksitet.
-
-*(6) Feed-Forward Network (Kontorarbeidet)*
-
-Etter at ordene har utvekslet informasjon i Attention-steget, går hver vektor individuelt gjennom et Feed-Forward-lag stem:[(\mathbf{X⋅W1​→ReLU→X⋅W2}​)].
-Hva det bidrar med i prosessen:
-
-- Ikke-linearitet: Attention er i bunn og grunn bare vektet summering (lineært). Feed-Forward-laget bruker aktiveringsfunksjoner (som stem:[\text{ReLU}]) som lar modellen forstå komplekse, ikke-lineære mønstre.
-
-- Individuell fordypning: Her får hvert ord "sitte i fred" og bearbeide den informasjonen det nettopp fikk fra de andre ordene. Det er her ordet oppdaterer sin egen interne status.
-
-Implikasjoner for trening:
-
-- Modellens "Hukommelse": Forskere mener nå at det er i Feed-Forward-lagene at modellens faktiske kunnskap lagres (f.eks. "Paris er hovedstaden i Frankrike").
-
-- Nøkkel-verdi-minne: Under trening lærer stem:[\mathbf{W_1}​] å kjenne igjen spesifikke mønstre (nøkler), og stem:[\mathbf{W_2}​] lærer å spytte ut den tilhørende informasjonen (verdien). Mens Attention finner ut hvilke ord som er relevante, bruker Feed-Forward denne relevansen til å hente ut lagret kunnskap fra vektene sine.
-
-=== 4. Etter forward flow: Sampling og dekoding
-
-Vi vet at chatbots ikke bare leverer ett svar, men svarer mer sammensatt med hele setninger, avsnitt osv. Denne fasen er omfattende, tidkrevende og skjer i flere trinn. Output-vektorene som kommer ut av forward flow, er på langt nær det endelige svaret.
-
-Overordnet kan vi si at en chatbot genererer tekst sekvensielt. Modellen produserer output, og det avledes en sannsynlighetsfordeling over mulige neste tokens fra dette. Et nytt token velges fra fordelingen og en tilhørende vektor føyes tl inputen, som deretter mates inn i modellen på nytt. Prosessen gjentas, slik at teksten bygges opp token for token.
-
-Vi skal stegvis da detaljene her. La oss starte med vokabular-matrisen. I moderne modeller er dette den samme store, trent matrisen (embeddings-matrisen) vi har snakket om før. Denne inneholder alle tokens i vokabularet og tilhørende input-vektorer. Denne matrisen betegnes i denne fasen som
+Detaljene videre er som følger. Man har en vokabular-matrise. I moderne modeller er dette den samme store, trente matrisen (embeddings-matrisen) vi har snakket om før. Denne inneholder alle tokens i vokabularet og tilhørende input-vektorer. Denne matrisen betegnes i denne fasen som
 
 [stem]
 ++++
 \mathbf{W_{vocab}}
 ++++
 
-Output-matrisen som kommer ut av alle blokkene, stem:[\mathbf{Y}] (som i moderne modeller har samme form som [\mathbf{X}]), multipliseres med stem:[\mathbf{W_{vocab}}]. Nærmere bestemt gjør man:
+Man multipliserer denne med stem:[\mathbf{y^{10}}]:
 
 [stem]
 ++++
-\mathbf{Y_{vocab} = W_{vocab} \cdot Y + b_{vocab}}
+\mathbf{logits} = \mathbf{W_{vocab}} \cdot \mathbf{y^{(10)}}
 ++++
 
-der stem:[\mathbf{b_{vocab}}] er en trent output bias-matrise. Man utfører så stem:[\mathbf{softmax}] på hver rad i resultat-matrisen stem:[\mathbf{Y_{vocab}}], og ender opp med en matrise stem:[\mathbf{P}] der hver rad stem:[\mathbf{P_1, P_2, ...}] gir en sannsynlighetsfordeling for hvert token i vokabularet, gitt den input som er prosessert gjennom nettverket. (Kolonnene i matrisen stem:[\mathbf{P}] representerer på sin side sannsynligheten for hvert token i vokabularet.)
+Resultatet, som gjerne kalles, stem:[\mathbf{logits}] blir f.eks. en stem:[50 \: 000]-vektor
+(om 50 000 tokens er definert). Hvert element i vektoren er skalarproduktet av radvektorene for hvert token i vokabular-matrisen og stem:[\mathbf{y^{10}}], og dette  korresponderer altsåmed vinkelen mellom dem. Store positive verdier indikerer at de peker i liknende retning.
 
-Systemet tar så siste rad, stem:[\mathbf{P_k}], velger ut et sannsynlig token fra dette, henter inne en tilhørende input-vektor og sender denne sammen med de opprinnelige input-vektorene (altså en ny matrise stem:[\mathbf{X'}]) gjennom en ny forward flow. Denne prosessen gjentas til et spesielt End of Sentence-token er valgt (eller til en forhåndsbestemt grense for antall tokens er nådd).
+Dette gjøres så om til sannsynligheter med en stem:[\text{softmax}]-operasjon:
 
-La oss eksemplifisere.
+[stem]
+++++
+p_{i} = \frac{e^{logit_{i}}}{\sum_{j=1}^n e^{logit_{j}}}
+++++
 
-Anta bruker skriver: "Hovedstaden i Frankrike? Vi tenker oss at dette utløser følgende beregningstrinnn:
-
-- Input: ["Hovedstaden", "i", "Frankrike", "?"]
-
-- Input-matrise stem:[\mathbf{X \qquad \qquad \; ( x^{(1)}, x^{(2)}, x^{(3)}, x^{(4} )} ] 
-
-- Output-matrise stem:[\mathbf{ Y \qquad \qquad \: (y^{(1)}, y^{(2)}, y^{(3)}, y^{(4)} ) }].
-
-- Sannsynlighetsmatrise stem:[\mathbf{P \qquad ( P^{(1)}, P^{(2)}, P^{(3)}, P^{(4)})}].
-
-Systemet velger så et token med høy sannsynlighet i stem:[\mathbf{P^{(4)}}], la oss si et som representerer "Paris". Dette føyes til på slutten av input-sekvensen, slik at man får:
-
-- Ny input: ["Hovedstaden", "i", "Frankrike", "?", "Paris"]
-
-- Ny input-matrise stem:[\mathbf{X' \qquad \qquad \;( x^{(1)}, x^{(2)}, x^{(3)}, x^{(4}, x^{(5} )} ] 
-
-- Ny output-matrise stem:[\mathbf{Y' \qquad \qquad \: ( y^{'(1)}, y^{'(2)}, y^{'(3)}, y^{'(4)}, y^{'(5)})}].
-
-- Ny sannsynlighetsmatrise stem:[\mathbf{P' \qquad ( P^{'(1)}, P^{'(2)}, P^{'(3)}, P^{'(4)}, P^{'(5)})}].
-
-og sender denne gjennom en ny forward flow sammen med de opprinnelige input-vektorene. Dette gjentas til et End of Sequence-token (EOS) produseres, bestemte stopp-sekvenser fremkommer eller en maksimumsgrense nås. Modellene lager gjerne en naturlig slutt, men dette er bare en statistisk sannsynlighet, ikke en garanti. Den følger sannsynlighetene den har lært også for når en tekst vanligvis avsluttes.
+Dvs. radvektorer i vokabular-matrisene som ligger nærmest (i retning) til stem:[\mathbf{y^{10}}], får høy sannsynlighet. Man foretar så en trekning basert på denne sannsynligheten, slik at tokens tilhørende vektorer som peker i samme retning som stem:[\mathbf{y^{10}}] har størst sannsynlighet for å bli trukket ut. Siden man foretar en trekning, velger ikke modellen samme token hver gang fra samme input, og modellen svarer stort sett unikt på spørsmål.
 
 == Programmeringseksempel
 
-Mye av dette er relativt enkelt å programmere f.eks. i Python, og vi skal forsøke å lage nedskalert modell som utfører det meste av dette. Vi må da bestemme oss for en del dimensjoner i modellen.
-
-=== Forutsetninger
-
- Vi legger da til grunn input-vektorer av dimensjon 128 og en følge av to i tallet: stem:[\mathbf{x^{(0)}, x^{(1)}}]. Videre legger vi til grunn fire nivåer i nodenettverket og følgende antall noder i hvert lag: 128→64→32→32→10
-
-=== Initialisering
-
-Vi kan nå definere strukturen for selve nodenettverket:
-
-[source,python]
-----
-import numpy as np
-
-# NODENETTVERK
-
-# INPUT-VEKTORER
-x = [
-    np.zeros((128, 1)),
-    np.zeros((128, 1)),
-]
-
-# VEKTMATRISER
-W = [np.zeros((64, 128)),
-     np.zeros((32, 64)),
-     np.zeros((32, 32)),
-     np.zeros((10, 32))
-     ]
-
-# BIAS-VEKTORER
-b = [np.zeros((128, 1)),
-     np.zeros((64, 1)),
-     np.zeros((32, 1)),
-     np.zeros((10, 1))
-     ]
-----
-
-Input
+Ikke ferdig

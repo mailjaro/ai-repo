@@ -13,12 +13,17 @@
         "embeddingsvektoren",
         "embeddingsvektorer",
         "implementasjonsdetaljer",
+        "initielt",
+        "intielt",
         "koeffisientene",
         "koeffisienter",
         "Kontekstualisering",
+        "logits",
+        "multimodal",
         "nærhetsmål",
         "nedskalert",
         "nevralt",
+        "normaliseringsparametre",
         "paddes",
         "prediksjonsmodeller",
         "programmeringseksempel",
@@ -36,6 +41,8 @@
         "synapsene",
         "synapser",
         "tokenisering",
+        "usymmetri",
+        "vektede",
         "vektorenes"
     ]
 }
