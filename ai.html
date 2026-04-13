@@ -443,7 +443,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="_introduksjon">Introduksjon</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Dette heftet gir en praktisk og strukturert innføring i hvordan moderne AI-modellerer bygget opp og fungerer. Målet er ikke å dekke alle detaljer eller gi en fullstendig teoretisk behandling, men å gi en korrekt og konkret forståelse av de viktigste byggesteinene og mekanismene.</p>
+<p>Dette heftet gir en praktisk og strukturert innføring i hvordan moderne AI-modellerer bygget opp og fungerer. Målet å gi en korrekt og konkret forståelse av de viktigste byggesteinene og mekanismene.</p>
 </div>
 <div class="paragraph">
 <p>Fremstillingen viser først den grunnleggende strukturen til et tradisjonelt nevralt nettverk: noder organisert i lag, koblet sammen gjennom vektede forbindelser. Vi ser der hvordan input-data representeres som vektorer, hvordan disse propagere gjennom nettverket via såkalt <strong>forward flow</strong>, og hvordan resultatet til slutt fremkommer i output-laget. Deretter ser vi nærmere på moderne AI-arkitekturer, blokk- eller transformer-strukturer med attention, residual connections og mere til.</p>
@@ -455,10 +455,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>Heftet ser også på representasjon av tekst gjennom tokens og embedding-vektorer, og til slutt hvordan en chatbot bygger opp sine mer sammensatte svar. Tekstlig input og tekstligemodeller har hovedfokus, men vi ser også litt på bildegenerering og hvordan disse modellene skiller seg fra de tekstbaserte.</p>
 </div>
 <div class="paragraph">
-<p>Avslutningsvis vises kodeeksempler i Python som demonstrerer hvordan et mindre AI-modeller kan implementeres og kjøres. Eksemplene er bevisst holdt enkle, men dekker likevel de fleste sentrale komponentene i et nettverk. Hensikten er å gjøre det mulig å se direkte sammenhenger mellom matematisk beskrivelse og faktisk programkode.</p>
-</div>
-<div class="paragraph">
-<p>Heftet er ment som en bro mellom teori og praksis: en introduksjon som er enkel nok til å være tilgjengelig, men samtidig presis nok til å gi en realistisk forståelse av virkemåten til moderne AI-systemer.</p>
+<p>Avslutningsvis vises kodeeksempler i Python som demonstrerer hvordan et mindre AI-modeller kan implementeres og kjøres. Eksemplene er bevisst holdt enkle, men dekker likevel de fleste sentrale komponentene i et nettverk.</p>
 </div>
 </div>
 </div>
@@ -490,7 +487,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>Denne utviklingen viser hvordan dagens AI-systemer ikke er resultatet av én enkelt idé, men av en gradvis oppbygning av konsepter, algoritmer og teknologiske fremskritt over tid.</p>
 </div>
 <div class="paragraph">
-<p>Det store gjennombruddet for store språkmodeller kom med lanseringen av ChatGPT 3 i juni 2020. Den etterfulgte ChatGPT 2 som kom i 2019, og var en stor skalering opp og en markant forbedring. Siden kom ChatGPT 4 i mars 2023 og CHatGPT 5 gradvis i 2025/2026.Andre fulgte opp, og f.eks. Gemini fra Google er nå i versjon 2.x som etterfulgte Gemini 1.5 i 2024 og Gemini 1.0 i 2023. Disse etterfulgte versjoner med andre navn (laMDA fra 2021, PaLM fra 2022 og PaLM 2 fra 2023). Og det fins selvsagt mange andre.</p>
+<p>Det store gjennombruddet for store språkmodeller kom med lanseringen av ChatGPT 3 i juni 2020. Den etterfulgte ChatGPT 2 som kom i 2019, og var en stor skalering opp og en markant forbedring. Siden kom ChatGPT 4 i mars 2023 og CHatGPT 5 gradvis i 2025/2026. Andre fulgte opp, og f.eks. Gemini fra Google er nå i versjon 2.x som etterfulgte Gemini 1.5 i 2024 og Gemini 1.0 i 2023. Disse etterfulgte versjoner med andre navn (laMDA fra 2021, PaLM fra 2022 og PaLM 2 fra 2023). Og det fins selvsagt mange andre.</p>
 </div>
 <div class="paragraph">
 <p>Gemini har vært multimodal fra starten (kan håndtere flere typer input og output: tekst, bilder, video og lyd) i motsetning til ChatGPT som ble multimodal først i versjon 4. Gemini er å oppfatte som én modell med flere innganger (for ulike typer input), mens ChatGPT kobler sammen flere modeller, f.eks. ChatGPT + DALL-E for bildehåndtering.</p>
@@ -551,7 +548,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>Når nodenettverket kjører (såkalt forward flow), mates en input-vektor (tenk spørsmål) inn i input-nodene og transformeres suksessivt gjennom alle lagene til et resultat (output-vektor) havner i output-nodene (tenk svaret på spørsmålet). I hvert lag utføres matriseoperasjoner mellom vektene og input-vektoren, hvilket resulterer i en ny vektor som så sendes videre til neste lag for tilsvarende sett av beregninger.</p>
 </div>
 <div class="paragraph">
-<p>Vi skal straks se på flere detaljer, men bør nevne at det finnes flere elementer i grunnstrukturen enn det viste. F.eks. knyttes gjerne såkalte bias-vektorer \(\mathbf{b^{(i)}}\) til hvert lag som blandes inn i beregningene.</p>
+<p>Vi skal straks se på flere detaljer, men bør nevne at det knyttes såkalte bias-vektorer \(\mathbf{b^{(i)}}\) til hvert lag, og disse blandes inn i beregningene.</p>
 </div>
 <div class="paragraph">
 <p>Når man trener nettverket starter prosessen i motsatt ende (backward flow). Vi skal si mer om dette senere, men kan kort si at det først beregnes en matematisk avstand mellom output-vektor og en vektor som representerer riktig svar, en såkalt tapsfunksjon. Verdien gis som startverdi til backdrop-algoritmen, som er en gradient-basert minimeringsalgoritme som her anvendes på vektrommet (den totale variasjonen av alle vektmatriser, bias-vektorer og andre numeriske parametre). Ved nok slik trening vil alle vektene og øvrige verdier å få gunstige verdier, i den forstand at de er optimalisert for å minimere tapsfunksjonen. I praksis betyr det at modellen svarer riktig ikke bare på den er trent på, men også i nye settinger.</p>
@@ -630,16 +627,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </div>
 <div class="paragraph">
-<p>(der \(\phi(x)\) er kumulativ normalfordeling). \(\text{GELU}\) er vanligst å bruke i moderne språkmodeller.</p>
+<p>(der \(\phi(x)\) er den kumulativ standard-normalfordelingen). \(\text{GELU}\) er vanligst å bruke i moderne språkmodeller.</p>
 </div>
 <div class="paragraph">
 <p>Uansett hvilken man velger, er ikke-linearitet helt avgjørende for at et nodenettverk, tradisjonelle såvel som moderne, skal fungere. Uten dette blir alt forutsigbart og dødt. Men det ønskes nokså subtile endringer her, noe som ikke ødelegger vektingen, som kan beregnes effektivt og som samspiller godt med treningsmetodene (backdrop).</p>
 </div>
 <div class="paragraph">
-<p>Det kan også nevnes at det forskes på andre operasjoner enn rene matriseoperasjoner her (andre effektive operasjoner som også gjør store tall store og små tall små, som ikke dreper signalene). Polynomer er bl.a. forsøkt.</p>
+<p>Det kan også nevnes at det forskes på andre operasjoner enn rene matriseoperasjoner her (andre effektive operasjoner som også gjør store tall store og små tall små, og som ikke dreper signalene). Polynomer er bl.a. forsøkt.</p>
 </div>
 <div class="paragraph">
-<p>Dette var forward flow uten attention-matriser. Som antydet i historikk-kapittelet (artikkelen All You Need Is Attention), bidrar attention-matriser betydelig til kvaliteten av moderne modeller. Men for å forstå hva det er, er det på tide å se nærmere på blokk-baserte AI-modeller og inkludere flere operasjoner.</p>
+<p>Dette var forward flow uten attention. Som antydet i historikk-kapittelet (artikkelen All You Need Is Attention), bidrar attention (også kal self-attention) betydelig til kvaliteten av moderne modeller. Men for å forstå hva det er, er det på tide å se nærmere på blokk-baserte AI-modeller og inkludere flere operasjoner.</p>
 </div>
 </div>
 </div>
@@ -647,7 +644,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="_moderne_ai_arkitektur_blokk_strukturer">Moderne AI-arkitektur: Blokk-strukturer</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Moderne arkitekturer har en annen oppbygging enn det nevnte. Man kan godt oppfatte dem som en sammensetning av flere nodenettverk, men det er bedre å tenke på strukturen som bestående av et antall blokker. Hver blokk består av to lag, et attention-lag (også kalt self-attention-lag) og ett feed forward lag (betegnet FFN- eller MLP-lag). Blokkene, som i antall kan være rundt 100 i moderne arkitekturer, er på input-parametre nær like, og er koblet sammen i en sekvens, der output fra én blokk mates sok input til neste blokk til man til slutt ender opp med en output-matrise \(\mathbf{Y}\) (i figuren betegnet \(\mathbf{X_n}\) = output fra siste blokk).</p>
+<p>Moderne arkitekturer har en annen oppbygging enn det nevnte. Man kan godt oppfatte dem som en sammensetning av flere nodenettverk, men det er bedre å tenke på strukturen som bestående av et antall blokker. Hver blokk består av to lag, et attention-lag (også kalt self-attention-lag) og ett feed forward lag (betegnet FFN- eller MLP-lag). Blokkene, som i antall kan være rundt 100 i moderne arkitekturer, er på input-parametre nær like, og er koblet sammen i en sekvens, der output fra én blokk mates som input til neste blokk, til man til slutt ender opp med en output-matrise \(\mathbf{Y}\) (i figuren betegnet \(\mathbf{X_n}\) = output fra siste blokk).</p>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -655,7 +652,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="paragraph">
-<p>Et attention-lag i en transformer-blokk representeres av et sett av tre vektmatriser \(\mathbf{W^Q}\), \(\mathbf{W^K}\) og \(\mathbf{W^V}\). FFN-laget representeres av noen vektmatriser \(\mathbf{W^{(i)}}\), samt en bias-matrise og ulike normaliseringsparametre.</p>
+<p>Et attention-lag i en transformer-blokk representeres av et sett av tre vektmatriser \(\mathbf{W^Q}\), \(\mathbf{W^K}\) og \(\mathbf{W^V}\). FFN-laget representeres av noen vektmatriser \(\mathbf{W^{(i)}}\), samt bias-matrise og ulike normaliseringsparametre.</p>
 </div>
 <div class="paragraph">
 <p>Merk at moderne litteratur begrepet lag (“layer”) annerledes i enn tradisjonelle lag i nodenettverk. Med dybden av en slik blokkarkitektur mener man antall blokker. Og vanlig dybde for større AI-modeller kan altså være rundt 100.</p>
@@ -692,11 +689,11 @@ brukerens spørsmål alt modellen selv har generert. Vi skal se på alle detalje
 </div>
 </div>
 <div class="paragraph">
-<p>Embedding-vektorenes verdier blir tilpasset i treningen slik at de fanger opp relasjoner mellom ord og begreper. Ord som er semantisk like, vil (pga. treningen) bli representert av vektorer som ligger nær hverandre i vektorrommet. Avstand eller likhet mellom slike vektorer kan måles på ulike måter. Et vanlig mål er cosinus-likhet, som beregnes ut fra vinkelen mellom vektorene. Vektorer som peker i lignende retninger vil ha høy cosinus-likhet, og representerer dermed ord med lignende betydning. (Vektorer som peker i liknende retning, vil ha cosinus-verdi nær 1; vektorer som peker i motsatt retning, vil ha verdier nær -1; vektorer som står tilnærmet vinkelrett på hverandre, vil ha cosinus-verdi nær 0.) Hvor i setninger ord forekommer og rekkefølgen av ord har også betydning i denne treningen.</p>
+<p>Embedding-vektorenes verdier blir tilpasset i treningen slik at de fanger opp relasjoner mellom ord og begreper. Ord som er semantisk like, vil (pga. treningen) bli representert av vektorer som ligger nær hverandre i vektorrommet. Avstand eller likhet mellom slike vektorer kan måles på ulike måter. Et vanlig mål er cosinus-likhet, som korresponderer til vinkelen mellom vektorene. Vektorer som peker i lignende retninger vil ha høy cosinus-likhet, og representerer dermed ord med lignende betydning. (Vektorer som peker i liknende retning, vil ha cosinus-verdi nær 1; vektorer som peker i motsatt retning, vil ha verdier nær -1; vektorer som står tilnærmet vinkelrett på hverandre, vil ha cosinus-verdi nær 0.) Hvor i setninger ord forekommer og rekkefølgen av ord har også betydning i denne treningen.</p>
 </div>
 <div class="paragraph">
 <p>Hver rad i embedding-matrisen tilsvarer ett token i vokabularet. Når et token med indeks
-\(i\) brukes som input, hentes den tilsvarende raden i matrisen ut og brukes som input-vektor.</p>
+\(i\) brukes som input, hentes den tilsvarende vektor i matrisen ut og brukes som input-vektor.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -720,10 +717,10 @@ bil     │ 0.9  -0.5  0.1  0.2 │
 </div>
 </div>
 <div class="paragraph">
-<p>Dimensjoner og implementasjonsdetaljer i nyere chatbots er ofte hemmelig, men for ChatGPT 3 er disse detaljene kjente. ChatGPT 3 er egentlig en familie av modeller: I den største av disse er lengden av embeddingsvektorer 12 288. Antall token er 50 257. Dvs. at \(\mathbf{W^{embed}}\) er en \(50 \: 257 \times 12 \: 288\)-matrise.</p>
+<p>Dimensjoner og implementasjonsdetaljer i nyere chatbots er ofte hemmelig, men for ChatGPT 3 er disse detaljene kjente. ChatGPT 3 er egentlig en familie av modeller. I den største av disse er lengden av embeddingsvektorer 12 288. Antall token er 50 257. Dvs. at \(\mathbf{W^{embed}}\) er en \(50 \: 257 \times 12 \: 288\)-matrise.</p>
 </div>
 <div class="paragraph">
-<p>Input-vektorene \(\mathbf{x^{(i)}}\), som kommer følgens av tokens, settes sammen til én input-matrise \(\mathbf{X}\). Det vil altså si at rader for aktuelle tokens i embeddingsmatrisen, blir radene i \(\mathbf{X}\).</p>
+<p>Input-vektorene \(\mathbf{x^{(i)}}\), som kommer fra følgen av tokens, settes sammen til én input-matrise \(\mathbf{X}\). Det vil altså si at vektorer for aktuelle tokens i embeddingsmatrisen, blir radene i \(\mathbf{X}\).</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -741,7 +738,7 @@ bil     │ 0.9  -0.5  0.1  0.2 │
 <p>Disse radvektorene er viktige å fokusere på. Ved kjøring vil disse rent matematisk foreta en reise i vektorrommet de lever i. Lineære og ikke-lineære operasjoner på matrisen dreier, flytter og strekker vektorene på ulike måter (lineært og ikke-lineært). Særlig er det verdt å merke seg at de fleste matriseoperasjonene endrer vektorene ved faste vekter (vektmatriser), en form for horisontal endring, mens attention-mekanismen endrer vektorene vertikalt, ved at endringene baserer seg på øvrige radvektorer i matrisen. Dette er lurt å ha i mente når man fordyper seg i beregningsdetaljene.</p>
 </div>
 <div class="paragraph">
-<p>Antall rader i \(\mathbf{X}\) vil være antall tokens i spørsmålet. Så om vektorlengdene er \(12 \: 288\) og antall input-tokens er \(10\), vil \(\mathbf{X}\) (og output-matrise \(\mathbf{Y}\) ) være en \(10 \times 12 \: 288\)-matrise.</p>
+<p>Antall rader i \(\mathbf{X}\) vil være antall tokens i spørsmålet. Så om vektorlengdene er \(12 \: 288\) og antall input-tokens er \(10\), vil \(\mathbf{X}\) være en \(10 \times 12 \: 288\)-matrise.</p>
 </div>
 <div class="paragraph">
 <p>(I virkeligheten er det mer effektivt å velge en rad-antall som bedre reflekter mer effektive datastørrelser som 128, 512 etc, slik at \(\mathbf{X}\) gjerne paddes med 0&#8217;ere).</p>
@@ -758,10 +755,10 @@ bil     │ 0.9  -0.5  0.1  0.2 │
 <p>En ChatBot forsøker altså finne beste, neste token (fra de som er angitt og funnet til nå). Den gjør det, som vi skal se, ved å legge embeddingsvektoren tilhørende dette token&#8217;et til forrige input-matrise \(\mathbf{X}\) og dermed produsere en ny input-matrise \(\mathbf{X'}\) med radvektorer for alle tidligere tokens samt den nye radvektoren.</p>
 </div>
 <div class="paragraph">
-<p>La oss se nærmere på hva som skjer i en transformer-blokk. Vi tar utgangspunkt i en input-matrise \(\mathbf{X}\) og følger dens transformasjon gjennom blokken.</p>
+<p>La oss se nærmere på hva som skjer i en transformer-blokk. Vi følger input-matrise \(\mathbf{X}\) sin transformasjon gjennom blokken.</p>
 </div>
 <div class="paragraph">
-<p>Det er 6 hovedtrinn i prosessen, hvorav steg 1-4 utgjør det som kalles attention, og som skjer i attention-laget. Dette er altså det som har vist seg så viktig for moderne AI-modeller. Trinn 5 og 6 skjer i FNN-laget, hvilket inkluderer såkalt residual connections. Vi skal først vise beregningene før vi diskuterer betydninger og implikasjoner av beregningene.</p>
+<p>Det er (med noe variasjoner i ulike modeller) 6 hovedtrinn i prosessen, hvorav steg 1-4 utgjør det som kalles attention, og som skjer i attention-laget. Dette er altså det som har vist seg så viktig for moderne AI-modeller. Trinn 5 og 6 skjer i FNN-laget, hvilket inkluderer såkalt residual connections. Vi skal først vise beregningene før vi diskuterer betydninger og implikasjoner av beregningene.</p>
 </div>
 <div class="sect2">
 <h3 id="_attention">Attention</h3>
@@ -787,7 +784,7 @@ bil     │ 0.9  -0.5  0.1  0.2 │
 </ul>
 </div>
 <div class="paragraph">
-<p>Merk at det disse navnen indikerer språklige roller, som kanskje eller kanskje ikke oppnås for matrisene. Det bør understrekes at disse ikke trenes forskjellig. Eventuelle grammatiske egenskaper er i tilfelle bare en indirekte følge av deres matematiske plassering i formlene og konsekvensene dette får i treningen.</p>
+<p>Merk at det disse navnen indikerer språklige roller, som kanskje eller kanskje ikke oppnås for matrisene. Det bør understrekes at disse ikke trenes forskjellig. Eventuelle grammatiske egenskaper er i tilfelle bare en indirekte følge av deres matematiske plassering i formlene og følgene dette får i treningen.</p>
 </div>
 <div class="paragraph">
 <p>Ordne kommer uansett fra følgende:</p>
@@ -806,7 +803,7 @@ bil     │ 0.9  -0.5  0.1  0.2 │
 </ul>
 </div>
 <div class="paragraph">
-<p>(men etter mitt og manges syn, er dette primært historiske navn.)</p>
+<p>men etter mitt og manges syn, er dette primært historiske navn. Det er i hvert fall vanskelig å se at dette følger av matematikken.</p>
 </div>
 <div class="paragraph">
 <p>Glem heller ikke at disse matrisene er tre projeksjoner av input-matrisen.</p>
@@ -815,7 +812,7 @@ bil     │ 0.9  -0.5  0.1  0.2 │
 <div class="sect3">
 <h4 id="_2_relasjoner">2. Relasjoner</h4>
 <div class="paragraph">
-<p>Idéen bak attention har å gjøre med at man i sterkere grad enn i tidligere modeller, forsøker å skue tilbake til tidligere ord i spørsmålet og til nye produserte tokens, når man bestemmer neste token i følgen. Når en input-matrise multipliseres med vektmatriser, så flytter og strekker dette radvektorene fra matrisen i det store vektorrommet, hvilket er vel og bra. Resultatet påvirkes av statiske, godt trenede vekter (såkalte harde vekter), men påvirkes ikke tidligere tokens/input-vektorer, selv om jo \(\mathbf{X}\) inneholder dette (slik vi føyer embeddingsvektorer til nye tokens til input-matrisene i forkant av hver kjøring). For å få til attention, må vi på en eller annen måte la \(\mathbf{X}\) påvirke seg selv, altså at vi erstatter \(\mathbf{X}\) med en «\(\mathbf{X}\) påvirket av \(\mathbf{X}\)»-matrise. Her kommer \(\mathbf{Q}\), \(\mathbf{K}\) og \(\mathbf{V}\) inn, som alle er direkte projeksjoner av \(\mathbf{X}\) (tenk versjoner av \(\mathbf{X}\)). Vi bør på en eller annen måte erstatte \(\mathbf{X}\) med en matrise \(\mathbf{Z}\) som er satt samme av disse. Dette skjer i steg 2, 3 og 4.</p>
+<p>Idéen bak attention har å gjøre med at man i sterkere grad enn i tidligere modeller, forsøker å skue tilbake til tidligere tokens i spørsmålet og til nye produserte tokens, når man bestemmer neste token i følgen. Når en input-matrise multipliseres med vektmatriser, så flytter og strekker dette radvektorene fra matrisen i det store vektorrommet, hvilket er vel og bra. Resultatet påvirkes av statiske, godt trenede vekter (såkalte harde vekter), men påvirkes ikke tidligere tokens/input-vektorer, selv om jo \(\mathbf{X}\) inneholder dette (slik vi føyer embeddingsvektorer til nye tokens til input-matrisene i forkant av hver kjøring). For å få til attention, må vi på en eller annen måte la beregningene se på alle radene (som står i en korrespondanse til alle ordene) i \(\mathbf{X}\). Her kommer \(\mathbf{Q}\), \(\mathbf{K}\) og \(\mathbf{V}\) inn, som alle er direkte projeksjoner av \(\mathbf{X}\) (tenk versjoner av \(\mathbf{X}\)). Som vi skal se, setter man disse sammen på en måte som oppnår dette. Dette skjer i steg 2, 3 og 4.</p>
 </div>
 <div class="paragraph">
 <p>Først gjør man</p>
@@ -832,7 +829,7 @@ bil     │ 0.9  -0.5  0.1  0.2 │
 <p>Merk at om bruker-spørsmålet bestod av \(10\) tokens, så blir resultatet en \(10×10\)-matrise (om vi ser bort fra eventuell padding). Dette har derfor med vår 10 input-tokens å gjøre. Under ser vi et eksempel på resultatmatrisen på dette stadiet i beregningen. På en måte er det en versjon \(\mathbf{X}\) og \(\mathbf{X^T}\), men etter at rad-vektorene (som korresponderte til tokens) har blitt endret av harde vektmatriser, dvs. de er flyttet lineært rundt i vektrommet. Vektorene representerer ikke lenger konkrete tokens (i prinsippet kunne de til og med ha representert andre tokens, selv om dette er <em>ekstremt</em> lite sannsynlig), men denne konstellasjonen gjør det mulig for treningen å se/spille på token&#8217;ene videre.</p>
 </div>
 <div class="paragraph">
-<p>Uansett er hvert tall resultat av skalarproduktet mellom en radvektor i \(\mathbf{Q}\) og en radvektor i \(\mathbf{K}\). Tallet er altså relatert til vinkelen mellom vektorene, men ikke helt og fullt siden man ikke har dividert med vektorlengdene (og fått cosinus-vinkel). Tall kan bli relativt store både fordi vinkelen mellom dem er liten eller vektorene er lange f.eks. Negative verdier er fullt mulig her, men er utelatt av hensyn til pen, enkel formatering.</p>
+<p>Uansett er hvert tall resultat av skalarproduktet mellom en radvektor i \(\mathbf{Q}\) og en radvektor i \(\mathbf{K}\) (pga. transponeringen). Tallet er altså relatert til vinkelen mellom vektorene, men ikke helt og fullt siden man ikke har dividert med vektorlengdene (og fått cosinus-vinkel). Tall kan i prinsippet bli relativt store både fordi vinkelen mellom dem er liten eller fordi vektorene er lange f.eks. Negative verdier er fullt mulig her, men er utelatt av hensyn til pen, enkel formatering.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -935,14 +932,14 @@ den     │ 0.05   0.05   0.05   0.35   0.10   0.15   0.05   0.05     0.10   0.1
 </div>
 </div>
 <div class="paragraph">
-<p>Koeffisientene \(a_{i,j}\) her er nettopp sannsynlighetsverdiene (radene) i attention-matrisen vi har eksemplifisert. Radvektoren vi ser her representerer altså en vektor i det store vektorrommet med koeffisienter med slike koeffisienter. Konkrete språknære tolkninger av denne bør man også i utgangspunktet være forsiktig med. Det som imidlertid <em>er</em> sikkert, er at vi har utført en tydelig en form for vertikal operasjon, en attention-operasjon (transformerte \(\mathbf{X}\)-verdier er unyttet som soft weights i bestemmelsen av \(\mathbf{Z}\)). Verdiene er sterkt avhengig av hvilke tokens som er benyttet til nå. Håpet er altså at nye tokens som produseres med dette er bedre knyttet til setningene som kommer før det, og dermed gjør modellen bedre egnet.</p>
+<p>Koeffisientene \(a_{i,j}\) her er nettopp sannsynlighetsverdiene (radene) i attention-matrisen vi har eksemplifisert. Radvektoren vi ser her representerer altså en vektor i det store vektorrommet med koeffisienter med slike koeffisienter. Konkrete språknære tolkninger av denne bør man også i utgangspunktet være forsiktig med. Det som imidlertid <em>er</em> sikkert, er at vi har utført en tydelig en form for vertikal operasjon, en attention-operasjon (transformerte \(\mathbf{X}\)-verdier er unyttet som soft weights i bestemmelsen av \(\mathbf{Z}\)). Verdiene er sterkt avhengig av hvilke tokens som er behandlet til nå. Håpet er altså at nye tokens som produseres med dette er bedre knyttet til ord og setninger som kommer før det, og dermed gjør modellen bedre egnet.</p>
 </div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_ffn_laget">FFN-laget</h3>
 <div class="paragraph">
-<p>Det er et par ulike varianter for FFN-laget, gjerne kalt Post-LN og Pre-LN.  Alle modeller inkluderer residual connection, layer norm og feed forward, men kan variere i rekkefølge og antall. De kan skisseres slik:</p>
+<p>Det er et par ulike varianter for FFN-laget, gjerne kalt Post-LN og Pre-LN.  Alle modeller inkluderer residual connection, layer norm og feed forward, men de kan variere litt i rekkefølge og antall. Variantene kan skisseres slik:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1013,15 +1010,15 @@ Output</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Sistnevnte er den som benyttes i ChatGPT. Vi beskriver her sistnevnte variant for rene å skille de to lagene fra hverandre, men det bør være enkelt å gå fra den ene til den andre ved å sette sammen elementene som beskrives i fortsettelsen.</p>
+<p>Sistnevnte er den som benyttes i ChatGPT. Vi beskriver her førstnevnte variant for rene å skille de to lagene fra hverandre, men det erenkelt å gå fra den ene til den andre fra bestanddelene som beskrives i fortsettelsen.</p>
 </div>
 <div class="sect3">
 <h4 id="_5_residual_add_layer_norm_stabilitet">5. Residual Add &amp; Layer Norm (Stabilitet)</h4>
 <div class="paragraph">
-<p>Det første vi gjør i neste steg er å utføre den første av to resudial connections. For FFN-laget i første blokk legger man den opprinnelige \(\mathbf{X}\) til resultatet \(\mathbf{Z}\). Tanken bak er å inkludere tidligere versjon av en matrise i beregningen for å hindre at "signalet" (informasjon) dør ut.</p>
+<p>Det første man da gjør i neste steg er å utføre en resudial connection. For FFN-laget i første blokk legger man den opprinnelige \(\mathbf{X}\) til resultatet \(\mathbf{Z}\). Tanken bak er å inkludere tidligere versjon av en matrise i beregningen for å hindre at "signalet" (informasjon) dør ut.</p>
 </div>
 <div class="paragraph">
-<p>I etterfølgende blokker er det output-vektoren fra forrige blokk som benyttes som input-blokk her.</p>
+<p>I etterfølgende blokker er det output-vektoren fra forrige blokk som benyttes som input-matrise her.</p>
 </div>
 <div class="paragraph">
 <p>Deretter normaliserer tallene slik at de har et gjennomsnitt på 0 og et standardavvik på 1.</p>
@@ -1092,7 +1089,7 @@ Output</code></pre>
 <div class="sect3">
 <h4 id="_6_prosessering">6. Prosessering</h4>
 <div class="paragraph">
-<p>Til slutt går hver rad i \(\mathbf{X_{mid}}\) gjennom et lite nodenettverk helt uavhengig av de andre radene. Dette består vanligvis av to lineære lag med en aktiveringsfunksjon (som \(\text{ReLU}\) eller \(\text{GeLU}\)) i mellom.</p>
+<p>Til slutt går hver rad i \(\mathbf{X_{mid}}\) gjennom et lite nodenettverk helt uavhengig av de andre radene. Dette består vanligvis av to lineære lag og en aktiveringsfunksjon (som \(\text{ReLU}\) eller \(\text{GeLU}\)).</p>
 </div>
 <div class="stemblock">
 <div class="content">
@@ -1115,7 +1112,7 @@ Output</code></pre>
 <h2 id="_etter_forward_flow_sampling_og_dekoding">Etter forward flow: Sampling og dekoding</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Chatbots ikke bare leverer ett svar, men forsøker å finne beste/mest sannsynlige neste token i følge av tokens. Dette er det grunnleggende i hvordan chatbots produserer sine sammensatte svar. Etter at input-matrise \(\mathbf{X}\) av modellen har blitt transformert til output-matrise \(\mathbf{Y}\) av samme form, tar man siste rad fra denne og prosesserer videre. I eksempelet vårt med 10 input-tokens, tar man altså ut en kopi av tiende rad \(\mathbf{y^{10}}\). Det  høres kanskje naturlig ut at man tar utgangspunkt siste rad for å finne neste token, men det er bare på grunn av at treningen baserer seg på dette, at dette er optimalt. Hver en rad i \(\mathbf{Y}\) startet reisen som en vektor tilhørende input-token&#8217;et og har nå endt som en annen vektor i vektorrommet basert på hauger av trenede input-parametre, attention-mekanismer og alt. Det er i utgangspunktet ikke sikkert at siste radvektor sånn sett har mer å fortelle om neste token enn andre radvektorer, men treningen sørger altså for det.</p>
+<p>Chatbots ikke bare leverer ett svar, men forsøker å finne beste/mest sannsynlige neste token i følge av tokens. Dette er det grunnleggende i hvordan chatbots produserer sine sammensatte svar. Etter at input-matrise \(\mathbf{X}\) av modellen har blitt transformert til output-matrise \(\mathbf{Y}\) av samme form, tar man siste rad fra denne og prosesserer videre. I eksempelet vårt med 10 input-tokens, tar man altså ut en kopi av tiende rad \(\mathbf{y^{10}}\). Det høres kanskje naturlig ut at man tar utgangspunkt siste rad for å finne neste token, men det er bare på grunn av at treningen baserer seg på dette at dette er optimalt. Hver en rad i \(\mathbf{Y}\) startet reisen som en vektor tilhørende input-token&#8217;et og har nå endt som en annen vektor i vektorrommet basert på hauger av trenede input-parametre, attention-mekanismer og alt. Det er i utgangspunktet ikke sikkert at siste radvektor sånn sett har mer å fortelle om neste token enn andre radvektorer, men treningen sørger altså for det.</p>
 </div>
 <div class="paragraph">
 <p>Noen modeller legger til en 11&#8217;te radvektor med tilfeldig innhold intielt isteden, og tar 11&#8217;te radvektor i \(\mathbf{Y}\) som utgangspunkt for neste token. Det høres kanskje mer naturlig ut, men forskjellen har tydeligvis ikke så mye å si.</p>
@@ -1164,7 +1161,7 @@ Output</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-04-12 11:46:25 +0200
+Last updated 2026-04-13 07:23:38 +0200
 </div>
 </div>
 <script type="text/x-mathjax-config">
