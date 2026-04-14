@@ -1,5 +1,8 @@
 = AI
 :stem: latexmath
+:toc: left
+:toclevels: 3
+:toc-title: Innholdsfortegnelse
 
 ## Introduksjon
 
@@ -125,7 +128,7 @@ Lag-operasjonene er i bunn og lineære matriseoperasjoner, men med et tilleggsbi
 
 (der stem:[\phi(x)] er den kumulativ standard-normalfordelingen). stem:[\text{GELU}] er vanligst å bruke i moderne språkmodeller.
 
-Uansett hvilken man velger, er ikke-linearitet helt avgjørende for at et nodenettverk, tradisjonelle såvel som moderne, skal fungere. Uten dette blir alt forutsigbart og dødt. Men det ønskes nokså subtile endringer her, noe som ikke ødelegger vektingen, som kan beregnes effektivt og som samspiller godt med treningsmetodene (backdrop).
+Uansett hvilken man velger, er ikke-linearitet helt avgjørende for at et nodenettverk, tradisjonelle såvel som moderne, skal fungere. Uten dette blir alt forutsigbart og dødt. Men det ønskes nokså subtile endringer her, noe som ikke ødelegger vektingen, som kan beregnes effektivt og som enkelt kan deriveres (med tanke trening der gradientberegning inngår som en viktig del).
 
 Det kan også nevnes at det forskes på andre operasjoner enn rene matriseoperasjoner her (andre effektive operasjoner som også gjør store tall store og små tall små, og som ikke dreper signalene). Polynomer er bl.a. forsøkt.
 
@@ -431,7 +434,7 @@ Output
 
 Sistnevnte er den som benyttes i ChatGPT. Vi beskriver her førstnevnte variant for rene å skille de to lagene fra hverandre, men det erenkelt å gå fra den ene til den andre fra bestanddelene som beskrives i fortsettelsen.
 
-==== 5. Residual Add & Layer Norm (Stabilitet)
+==== 5. Residual connection og Layer Norm (Stabilitet)
 
 Det første man da gjør i neste steg er å utføre en resudial connection. For FFN-laget i første blokk legger man den opprinnelige stem:[\mathbf{X}] til resultatet stem:[\mathbf{Z}]. Tanken bak er å inkludere tidligere versjon av en matrise i beregningen for å hindre at "signalet" (informasjon) dør ut.
 
@@ -501,7 +504,7 @@ Disse beregningene gjentas gjennom hver blokk, som er like i struktur, men som h
 
 == Etter forward flow: Sampling og dekoding
 
-Chatbots ikke bare leverer ett svar, men forsøker å finne beste/mest sannsynlige neste token i følge av tokens. Dette er det grunnleggende i hvordan chatbots produserer sine sammensatte svar. Etter at input-matrise stem:[\mathbf{X}] av modellen har blitt transformert til output-matrise stem:[\mathbf{Y}] av samme form, tar man siste rad fra denne og prosesserer videre. I eksempelet vårt med 10 input-tokens, tar man altså ut en kopi av tiende rad stem:[\mathbf{y^{10}}]. Det høres kanskje naturlig ut at man tar utgangspunkt siste rad for å finne neste token, men det er bare på grunn av at treningen baserer seg på dette at dette er optimalt. Hver en rad i stem:[\mathbf{Y}] startet reisen som en vektor tilhørende input-token'et og har nå endt som en annen vektor i vektorrommet basert på hauger av trenede input-parametre, attention-mekanismer og alt. Det er i utgangspunktet ikke sikkert at siste radvektor sånn sett har mer å fortelle om neste token enn andre radvektorer, men treningen sørger altså for det.
+Chatbots ikke bare leverer ett svar, men forsøker å finne beste/mest sannsynlige neste token i følge av tokens. Dette er det grunnleggende i hvordan chatbots produserer sine sammensatte svar. Etter at input-matrise stem:[\mathbf{X}] av modellen har blitt transformert til output-matrise stem:[\mathbf{Y}] av samme form, tar man siste rad fra denne og prosesserer videre. I eksempelet vårt med 10 input-tokens, tar man altså ut en kopi av tiende rad stem:[\mathbf{y^{(10)}}]. Det høres kanskje naturlig ut at man tar utgangspunkt siste rad for å finne neste token, men det er bare på grunn av at treningen baserer seg på dette at dette er optimalt. Hver en rad i stem:[\mathbf{Y}] startet reisen som en vektor tilhørende input-token'et og har nå endt som en annen vektor i vektorrommet basert på hauger av trenede input-parametre, attention-mekanismer og alt. Det er i utgangspunktet ikke sikkert at siste radvektor sånn sett har mer å fortelle om neste token enn andre radvektorer, men treningen sørger altså for det.
 
 Noen modeller legger til en 11'te radvektor med tilfeldig innhold intielt isteden, og tar 11'te radvektor i stem:[\mathbf{Y}] som utgangspunkt for neste token. Det høres kanskje mer naturlig ut, men forskjellen har tydeligvis ikke så mye å si.
 
@@ -512,7 +515,7 @@ Detaljene videre er som følger. Man har en vokabular-matrise. I moderne modelle
 \mathbf{W_{vocab}}
 ++++
 
-Man multipliserer denne med stem:[\mathbf{y^{10}}]:
+Man multipliserer denne med stem:[\mathbf{y^{(10)}}]:
 
 [stem]
 ++++
@@ -520,7 +523,7 @@ Man multipliserer denne med stem:[\mathbf{y^{10}}]:
 ++++
 
 Resultatet, som gjerne kalles, stem:[\mathbf{logits}] blir f.eks. en stem:[50 \: 000]-vektor
-(om 50 000 tokens er definert). Hvert element i vektoren er skalarproduktet av radvektorene for hvert token i vokabular-matrisen og stem:[\mathbf{y^{10}}], og dette  korresponderer altsåmed vinkelen mellom dem. Store positive verdier indikerer at de peker i liknende retning.
+(om 50 000 tokens er definert). Hvert element i vektoren er skalarproduktet av radvektorene for hvert token i vokabular-matrisen og stem:[\mathbf{y^{(10)}}], og dette  korresponderer altså med vinkelen mellom dem. Store positive verdier indikerer at de peker i liknende retning.
 
 Dette gjøres så om til sannsynligheter med en stem:[\text{softmax}]-operasjon:
 
@@ -529,7 +532,145 @@ Dette gjøres så om til sannsynligheter med en stem:[\text{softmax}]-operasjon:
 p_{i} = \frac{e^{logit_{i}}}{\sum_{j=1}^n e^{logit_{j}}}
 ++++
 
-Dvs. radvektorer i vokabular-matrisene som ligger nærmest (i retning) til stem:[\mathbf{y^{10}}], får høy sannsynlighet. Man foretar så en trekning basert på denne sannsynligheten, slik at tokens tilhørende vektorer som peker i samme retning som stem:[\mathbf{y^{10}}] har størst sannsynlighet for å bli trukket ut. Siden man foretar en trekning, velger ikke modellen samme token hver gang fra samme input, og modellen svarer stort sett unikt på spørsmål.
+Dvs. radvektorer i vokabular-matrisene som ligger nærmest (i retning) til stem:[\mathbf{y^{(10)}}], får høy sannsynlighet. Man foretar så en trekning basert på denne sannsynligheten, slik at tokens tilhørende vektorer som peker i samme retning som stem:[\mathbf{y^{10}}] har størst sannsynlighet for å bli trukket ut. Siden man foretar en trekning, velger ikke modellen samme token hver gang fra samme input, og modellen svarer stort sett unikt på spørsmål.
+
+== Trening av AI-modeller
+
+AI-modeller av typen vi snakker om her trenes primært maskinelt med tapsfunksjon og backdrop som nevnt. Vi skal se på flere detaljer, men først nevne at de også trenes av mennesker, RLHF (Reinforcement Learning from Human Feedback). Dette inkluderer at mennesker vurderer og rangerer svar (hvilke som er gode, høflige, tydelig osv). En reward-modell utvikles og trener språkmodellen videre. Prosessen oppsummert kan sies å bestå av:
+
+[source,text]
+----
+Pretraining (tekstdata)
+        ↓
+Supervised fine-tuning (menneskesvar)
+        ↓
+Reward model (menneskelig rangering)
+        ↓
+RL (optimaliser for menneskelig preferanse)
+----
+
+Det er mulig å fordype seg mer i dette for de som er interessert i disse sidene. Vi skal imidlertid heller se nærmere på backdrop-algoritmen.
+
+Utgangspunktet er en tapsfunksjon. Man gjør en liten endring i hvordan modellen tar ut neste token. Isteden for å bare kopiere ut siste radvektor stem:[\mathbf{y^{(10)}}] fra output-matrisen, tar man ut alle stem:[\mathbf{y^{(1)}} \: \cdots \: \mathbf{y^{(T)}} ]. Dette gir stem:[T] sannsynlighetsvektorer 
+stem:[\mathbf{p^{(1)}} \: \cdots \: \mathbf{p^{(T)}}] med elementer stem:[p_i^{(j)}] og en sekvens av tokens:
+
+[stem]
+++++
+\tau_1, \tau_2, \ldots, \tau_T
+++++
+
+Modellen prøver å estimere:
+
+[stem]
+++++
+P(\tau_t | \tau_1, \tau_2, \ldots, \tau_{t-1})
+++++
+
+altså sannsynligheten for neste tokens, gitt tidligere tokens.
+
+
+Tapsfunksjonen defineres som:
+
+[stem]
+++++
+\mathcal{L} = - \sum_{t=1}^{T} \log P(\tau_t \mid \tau_1, \dots, \tau_{t-1})
+++++
+
+altså vi summerer logaritmen av disse sannsynligheten fra det første til det siste. Det kan synes noe tilfeldig, men viser seg å forenkle de første stegene i gradient-beregningene vi trenger i backdrop. Den avsluttende stem:[\text{softmax}]-operasjonen av logits'ene får et enkelt uttrykk. Dessuten fungerer den som en tapsfunksjon. Riktig svar (riktig token) representeres av en vektor
+
+[stem]
+++++
+\rho^{(i)} = [0, 0, \: \cdots \: 0, 1, 0, \: \cdots \: 0]
+++++
+
+og det kan vises at tapsfunksjonen vår kan skrives
+
+[stem]
+++++
+\mathcal{L} = -\sum_{t=1}^T \sum_{k=1}^V \rho_k^t \: log \: p_k^t
+++++
+
+som gir veldefinerte verdier.
+
+Backdrop består bare i å beregne gradienten til funksjonen stem:[\mathcal{L}] i vektorrommet av alle parametre stem:[w_i] i modellen (betraktet som variable), og i punktet bestemt av verdien alle disse parametrene har per nå. Dette kan sikkert virke både overveldende og forvirrende. Det er mye notasjon å holde orden på, men idéen er ganske enkel. La oss minne oss på matematikken her:
+
+En (tilstrekkelig pen) funksjon stem:[f] i tre variable stem:[x, y, x], altså stem:[f(x, y, z)], har en gradientvektor stem:[\nabla f] gitt ved
+
+[stem]
+++++
+\nabla f = \left[ \frac{ \partial f}{\partial x},  \frac{\partial f}{\partial y}, \frac{\partial f}{\partial z} \right]
+++++
+
+som kan beregnes i alle (lovlige) punkter stem:[P = (x_0, y_0, z_0)] og peker der i retning av størst vekst (slik at at stem:[- \nabla f] peker i mest avtakende retning).
+
+I vårt tilfelle har vi svært mange operasjoner og parametre stem:[w_i]. Men legg for det første merke til at operasjonene virker i tur og orden ved at output fra en operasjon eller lag, blir input til neste operasjon eller lag. Dette gir opphav til sammensatte funksjoner. F.eks.
+
+[stem]
+++++
+\mathbf{X} \rightarrow Att_1 \rightarrow FFN_1 \rightarrow Att_2 \rightarrow FFN_2
+++++
+
+[stem]
+++++
+\mathbf{X} \rightarrow FFN_2\left( Att_2 \left( FFN_1 \left( Att_1(X) \right) \right) \right)
+++++
+
+Hver av disse kan deles videre opp i sammensatte funksjoner også, og det samme kan residual connections og layer-norm. Nå er det riktignok slik at tapsfunksjonen og gradienten opererer på enkeltvariable, som stem:[p_{k,t}] og stem:[w_i], ikke på matrise-likninger som våre nevnte. Men det er mulig å nyttiggjøre seg av matrix-calculus her, ved å utnytte Jacobi-matriser i likninger der det trengs. Arkitekturen er delvis valgt for å effektivisere gradientberegningen (mange av dem virker lineært, via diagonale matriser mm og er dermed jacobianere). Med rette betingelser vil:
+
+[stem]
+++++
+\frac{\partial \mathcal{L}}{\partial\mathbf{M}} = 
+\frac{\partial \mathcal{L}}{\partial\mathbf{M_1}} \cdot 
+\frac{\partial\mathbf{M_1}}{\partial\mathbf{M}}
+++++
+
+(Betingelsene inkluderer at stem:[\frac{\partial \mathcal{L}}{\partial\mathbf{M_1}}] er gradient og stem:[\frac{\partial\mathbf{M_1}}{\partial\mathbf{M}}] er jacobian.)
+
+Matrix-calculus er nok mer utilgjengelig for mange enn resten av matematikken. Men for å forstå beregning av en gradient, kan man ta utgangspunkt i tapsfunksjonen og _tenke_ seg at man nøster opp alt fra enkeltvariable i tapsfunksjonen. Dette blir i praksis umulig med det antallet parametre stem:[w_i] vi jobber med, men er mer på linje med en matematikk de fleste kjenner.
+
+Dette ville blitt mange lag av sammensatte funksjoner, men dette er noe som er enkelt enkelt å derivere. Vi minner om kjerneregelen som sier at
+
+[stem]
+++++
+(f(u(x)))' = f'(u(x)) \cdot u'(x)
+++++
+
+hvilket bedre kan skrives
+
+[stem]
+++++
+\frac{df}{dx} = \frac{df}{du} \cdot \frac{du}{dx} 
+++++
+
+Vi kan godt ha flere lag av sammensatte funksjoner her, og vi vet at denne prosessen stopper fint etter et antall derivasjonssteg. På tilsvarende måte vil utrykkene
+
+[stem]
+++++
+\frac{\partial \mathcal{L}}{\partial w_i} = 
+\frac{\partial \mathcal{L}}{\partial f} \cdot 
+\frac{\partial f}{\partial g} \cdot 
+\frac{\partial g}{\partial h} \cdots
+\frac{\partial z}{\partial w_i}
+++++
+
+fungere og i prinsippet kunne beregnes (selv om arbeidsmengden her eksploderer). Dermed kan man sikkert godta at gradienten er veldefinert (selv om en faktisk beregning i praksis krever matrix-calculus).
+
+Deretter man oppdaterer man alle parametre ved uttrykk som
+
+[stem]
+++++
+\mathbf{w^{(i)}} \rightarrow \mathbf{w^{(i)}}  - \eta \: \nabla \mathcal{L} \: \mathbf{w^{(i)}} 
+++++
+
+der steglengden stem:[\eta] bestemmes mer eksperimentelt.
+
+== Bildegenerering
+
+Ikke ferdig
+
+Følgende bildeillustrasjon viser forden AI-motoren tar utgangspunkt i et bilde med tilfeldige piksler og gradvis jobber fram et ferdig bilde.
+
+image::images/picture_gen.png[800,600]
 
 == Programmeringseksempel
 
