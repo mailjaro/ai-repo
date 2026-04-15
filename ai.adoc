@@ -675,3 +675,21 @@ image::images/picture_gen.png[800,600]
 == Programmeringseksempel
 
 Ikke ferdig
+
+== 📚 Andre hefter i serien
+
+📘 https://mailjaro.github.io/linux-repo/[Linux for hjemmebruk]
+
+📘 https://mailjaro.github.io/css-repo/[Litt om CSS: Virkemåte]
+
+📘 https://mailjaro.github.io/git-repo/[Litt om Git]
+
+📘 https://mailjaro.github.io/vscode-repo/[Litt om VS Code]
+
+📘 https://mailjaro.github.io/gpg-repo/[Litt om GPG]
+
+📘 https://mailjaro.github.io/highlight-repo/[Litt om syntaksutheving]
+
+📘 https://mailjaro.github.io/makefile-repo/[Litt om Makefile]
+
+
