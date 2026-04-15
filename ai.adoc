@@ -680,7 +680,7 @@ Ikke ferdig
 
 📘 https://mailjaro.github.io/linux-repo/[Linux for hjemmebruk]
 
-📘 https://mailjaro.github.io/css-repo/[Litt om CSS: Virkemåte]
+📘 https://mailjaro.github.io/css-repo/[Litt om CSS]
 
 📘 https://mailjaro.github.io/git-repo/[Litt om Git]
 
