@@ -678,17 +678,9 @@ Ikke ferdig
 
 == 📚 Andre hefter i serien
 
-📘 https://mailjaro.github.io/linux-repo/[Linux for hjemmebruk]
+For andre hefter i serien, se:
 
-📘 https://mailjaro.github.io/css-repo/[Litt om CSS]
+📘 https://mailjaro.github.io/[Min startside på GitHub]
 
-📘 https://mailjaro.github.io/git-repo/[Litt om Git]
 
-📘 https://mailjaro.github.io/vscode-repo/[Litt om VS Code]
-
-📘 https://mailjaro.github.io/gpg-repo/[Litt om GPG]
-
-📘 https://mailjaro.github.io/highlight-repo/[Litt om syntaksutheving]
-
-📘 https://mailjaro.github.io/makefile-repo/[Litt om Makefile]
 

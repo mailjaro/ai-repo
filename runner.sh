@@ -1,2 +1,2 @@
 asciidoctor -a data-uri ai.adoc
-cp ai.html /builds
+cp ai.html builds/
